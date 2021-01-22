@@ -66,8 +66,8 @@ FoodRouter.get(
     const cartFoodies: FoodType[] = [];
 
     for (const food of realFoodies) {
-      foodies?.some(({ foodId }) => {
-        if (food.foodId === foodId) {
+      foodies?.some((fd: FoodType) => {
+        if (food.foodId === fd.foodId) {
           cartFoodies.push(food);
         }
       });
@@ -127,14 +127,13 @@ FoodRouter.post(
 
     const filePath = `uploads/${file.name}`;
     await FoodModel.findOne({ name })
-      .then(async (food) => {
+      .then(async (food: FoodType) => {
         if (food?.name == name) {
           return res.send({ message: "Food Item already exists" });
         }
       })
-      .catch((e) => {
-        console.log(e);
-        new Error(e);
+      .catch((e: Error) => {
+        console.error(e);
         return res.status(401).send({ error: e });
       });
 

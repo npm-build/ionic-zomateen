@@ -1,0 +1,7 @@
+{
+  "name": "zomateen",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}

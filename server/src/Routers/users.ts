@@ -37,7 +37,7 @@ UserRouter.post("/api/user/login", async (req: Request, res: Response) => {
 
   await userModel
     .findOne({ userName })
-    .then((currentUser) => {
+    .then((currentUser: UserType | null) => {
       if (currentUser === null) return res.sendStatus(404);
 
       bcrypt.compare(userPass, currentUser.password, async (err, result) => {
@@ -60,7 +60,9 @@ UserRouter.post("/api/user/login", async (req: Request, res: Response) => {
         return res.send({ error: "Error logging in!!!", msg: err });
       });
     })
-    .catch((err) => res.send({ error: "Error logging in!!!", msg: err }));
+    .catch((err: Error) =>
+      res.send({ error: "Error logging in!!!", msg: err })
+    );
 });
 
 UserRouter.delete("/api/user/logout", async (req: Request, res: Response) => {
@@ -80,7 +82,7 @@ UserRouter.post("/api/user/signup", async (req: Request, res: Response) => {
   const { firstName, lastName, phone, userName, usn, password } = req.body;
   const bodypassword = password;
 
-  await userModel.findOne({ userName }).then((dbUser) => {
+  await userModel.findOne({ userName }).then((dbUser: UserType | null) => {
     dbUser
       ? res.send({ message: "User already exists" })
       : bcrypt.hash(bodypassword, 7, async (err, hashedPassword) => {
@@ -109,17 +111,7 @@ UserRouter.patch(
     const { usn, foodId } = req.body;
 
     try {
-      await userModel.updateOne(
-        { usn },
-        { $addToSet: { favorites: foodId } },
-        (error, success) => {
-          if (error) {
-            console.log(error);
-          } else {
-            console.log(success);
-          }
-        }
-      );
+      await userModel.updateOne({ usn }, { $addToSet: { favorites: foodId } });
     } catch (e) {
       return res
         .status(401)
@@ -165,18 +157,9 @@ UserRouter.patch(
   async (req: Request, res: Response) => {
     const { usn, foodId } = req.body;
 
-    await userModel.updateOne(
-      { usn },
-      { $pullAll: { favorites: [foodId] } },
-      (error, success) => {
-        if (error) {
-          console.log(error);
-          return res.send({ error: "Failed to remove food from favorites!!!" });
-        } else {
-          console.log(success);
-        }
-      }
-    );
+    await userModel
+      .updateOne({ usn }, { $pullAll: { favorites: [foodId] } })
+      .catch((e: Error) => console.error(e));
 
     return res.send({ msg: "Food removed from favorites successfully" });
   }
@@ -208,18 +191,21 @@ UserRouter.post("/api/user/token", async (req, res) => {
   const refresh_token = req.body.token;
   if (refresh_token === null) return res.sendStatus(401);
 
-  await refreshTokenModel.findOne({ refresh_token }, (err, token) => {
-    if (err) return res.sendStatus(403);
-    if (refresh_token === token) {
-      jwt.verify(
-        refresh_token,
-        REFRESH_TOKEN_SECRET,
-        (err: any, currentUser: any) => {
-          if (err) return res.sendStatus(403);
-          const access_token = generateAccessTokenUser(currentUser);
-          return res.json({ accessToken: access_token });
-        }
-      );
+  await refreshTokenModel.findOne(
+    { refresh_token },
+    (err: Error, token: string) => {
+      if (err) return res.sendStatus(403);
+      if (refresh_token === token) {
+        jwt.verify(
+          refresh_token,
+          REFRESH_TOKEN_SECRET,
+          (err: any, currentUser: any) => {
+            if (err) return res.sendStatus(403);
+            const access_token = generateAccessTokenUser(currentUser);
+            return res.json({ accessToken: access_token });
+          }
+        );
+      }
     }
-  });
+  );
 });

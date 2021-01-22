@@ -1,26 +1,30 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import Routers from "./Routers";
-import reportWebVitals from "./reportWebVitals";
-// import { createStore } from 'redux';
-// import { Provider } from 'react-redux';
-// import allReducers from './utils/reducers';
+import App from "./App";
+import * as serviceWorker from "./serviceWorker";
 
-import "./styles/index.scss";
-import "bootstrap/dist/css/bootstrap.min.css";
+/* Core CSS required for Ionic components to work properly */
+import "@ionic/react/css/core.css";
 
-// const store = createStore(allReducers);
+/* Basic CSS for apps built with Ionic */
+import "@ionic/react/css/normalize.css";
+import "@ionic/react/css/structure.css";
+import "@ionic/react/css/typography.css";
 
-ReactDOM.render(
-  <React.StrictMode>
-    {/* <Provider store={store}> */}
-    <Routers />
-    {/* </Provider> */}
-  </React.StrictMode>,
-  document.getElementById("root")
-);
+/* Optional CSS utils that can be commented out */
+import "@ionic/react/css/padding.css";
+import "@ionic/react/css/float-elements.css";
+import "@ionic/react/css/text-alignment.css";
+import "@ionic/react/css/text-transformation.css";
+import "@ionic/react/css/flex-utils.css";
+import "@ionic/react/css/display.css";
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+/* Theme variables */
+import "./theme/variables.css";
+
+ReactDOM.render(<App />, document.getElementById("root"));
+
+// If you want your app to work offline and load faster, you can change
+// unregister() to register() below. Note this comes with some pitfalls.
+// Learn more about service workers: https://bit.ly/CRA-PWA
+serviceWorker.register();

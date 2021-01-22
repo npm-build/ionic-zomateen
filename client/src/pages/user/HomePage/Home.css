@@ -1,0 +1,7 @@
+.horizontal-scroll-row {
+  overflow-x: scroll;
+}
+
+.margin-sides {
+  padding: auto;
+}
