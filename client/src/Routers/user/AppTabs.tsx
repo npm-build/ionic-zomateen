@@ -28,9 +28,9 @@ function AppTabs() {
         <Route exact path="/user/favorites">
           <HomePage />
         </Route>
-        <Route exact path="/user/food/:id">
+        {/* <Route exact path="/user/food/:id">
           <FoodPage />
-        </Route>
+        </Route> */}
       </IonRouterOutlet>
       <IonTabBar slot="bottom">
         <IonTabButton tab="home" href="/user/home">

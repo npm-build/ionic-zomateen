@@ -10,7 +10,6 @@ import {
 import { add } from "ionicons/icons";
 import React from "react";
 
-import { FoodType } from "../../../../react-app-env";
 import "./FoodItem.styles.css";
 
 const backendUrl = "https://zomateen-backend.herokuapp.com/";
