@@ -1,0 +1,11 @@
+.slide {
+  height: 85vh;
+}
+
+.slide > img {
+  min-width: 500px;
+}
+
+.ion-content-main {
+  --background: var(--ion-background-color, #fbb346);
+}

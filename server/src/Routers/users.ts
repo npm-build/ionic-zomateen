@@ -13,8 +13,12 @@ const REFRESH_TOKEN_SECRET =
   "aa1e207051c835692d4fb6c9f3073bb5e32e747c12baa3bc0a208c0c6383730466dc626e35fb0a0d64aa1aba5cd8b11e69c4e15df02e40caef7a930854b76e32";
 
 UserRouter.get("/api/users", async (req: Request, res: Response) => {
-  const users = await userModel.find({});
-  return res.send(users);
+  try {
+    const users = await userModel.find({});
+    return res.send(users);
+  } catch (e: any) {
+    console.log(e);
+  }
 });
 
 UserRouter.get("/api/user/dropDB", async (req: Request, res: Response) => {

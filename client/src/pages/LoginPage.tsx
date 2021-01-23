@@ -77,11 +77,11 @@ function LoginPage() {
           duration={5000}
           color="danger"
         />
-        <IonButton color="warning" expand="block" onClick={handleLogin}>
+        <IonButton expand="block" onClick={handleLogin}>
           <IonText color="light">Login</IonText>
         </IonButton>
         <IonButton fill="clear" expand="block" routerLink="/signup">
-          <IonText color="warning">Don't have an account?</IonText>
+          <IonText>Don't have an account?</IonText>
         </IonButton>
         <IonLoading isOpen={loading}></IonLoading>
       </IonContent>

@@ -29,9 +29,9 @@ const FoodItem: React.FC<{ food: FoodType }> = ({ food }) => {
           className="ion-justify-content-between"
         >
           <IonText color="medium">Rs {food.price}</IonText>
-          <IonText color="warning">4 Star</IonText>
+          <IonText>4 Star</IonText>
         </div>
-        <IonButton color="warning">
+        <IonButton>
           <IonIcon slot="start" color="light" icon={add} />
           <IonText color="light">Add To Cart</IonText>
         </IonButton>

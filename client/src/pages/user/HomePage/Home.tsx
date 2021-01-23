@@ -43,7 +43,6 @@ const Home: React.FC = () => {
           <IonRow>
             <IonCol className="margin-sides">
               <IonSegment
-                color="warning"
                 value={segmentValue}
                 onIonChange={(e) => setSegmentValue(e.detail.value!)}
               >

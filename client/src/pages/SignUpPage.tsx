@@ -125,11 +125,11 @@ function SignUpPage() {
           duration={5000}
           color="success"
         />
-        <IonButton color="warning" expand="block" onClick={handleSignUp}>
+        <IonButton expand="block" onClick={handleSignUp}>
           <IonText color="light">SignUp</IonText>
         </IonButton>
         <IonButton fill="clear" expand="block" routerLink="/login">
-          <IonText color="warning">Already have an account?</IonText>
+          <IonText>Already have an account?</IonText>
         </IonButton>
         <IonLoading isOpen={loading}></IonLoading>
       </IonContent>

@@ -1,5 +1,6 @@
 import express from "express";
 import fileUpload from "express-fileupload";
+
 import { UserRouter } from "./Routers/users";
 import { FoodRouter } from "./Routers/food";
 import { AdminRouter } from "./Routers/admins";
@@ -22,4 +23,6 @@ app.use(FoodRouter);
 app.use(AdminRouter);
 app.use(OrderRouter);
 
-app.listen(8000, () => console.log("Server listening on PORT 8000"));
+app.listen(process.env.PORT || 8000, () =>
+  console.log("Server listening on PORT 8000")
+);
