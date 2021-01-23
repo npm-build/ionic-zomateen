@@ -2,9 +2,8 @@ import React, { createContext, useContext, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 
-import { FoodContextType, FoodType } from "../../react-app-env";
-
 const accessToken = Cookies.get("accessToken");
+const backendUrl = "https://zomateen-backend.herokuapp.com/";
 
 export const FoodContext = createContext<FoodContextType>({
   foodies: null,
@@ -20,7 +19,7 @@ export const FoodContextProvider: React.FC = ({ children }) => {
 
   async function getFood() {
     await axios
-      .get("/api/getfoodies", {
+      .get(`${backendUrl}api/getfoodies`, {
         headers: {
           Authorization: "Bearer " + accessToken,
         },

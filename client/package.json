@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
-  "proxy": "https://zomateen-backend.herokuapp.com/",
   "scripts": {
     "start:prod": "npx serve -s build",
     "start": "ionic serve",

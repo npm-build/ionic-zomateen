@@ -1,7 +1,5 @@
 /// <reference types="react-scripts" />
 
-import firebase from "firebase";
-
 interface UserType {
   firstName: string;
   lastName: string;

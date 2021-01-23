@@ -1,5 +1,6 @@
 import express from "express";
 import fileUpload from "express-fileupload";
+import cors from "cors";
 
 import { UserRouter } from "./Routers/users";
 import { FoodRouter } from "./Routers/food";
@@ -9,6 +10,12 @@ import "./DB/db";
 
 const app = express();
 
+// app.use(function (req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Headers", "X-Requested-With");
+//   next();
+// });
+app.use(cors());
 app.use(express.json());
 app.use(
   fileUpload({

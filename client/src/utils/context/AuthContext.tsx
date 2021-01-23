@@ -2,9 +2,8 @@ import React, { createContext, useContext, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 
-import { AuthContextType, UserType } from "../../react-app-env";
-
 const accessToken = Cookies.get("accessToken");
+const backendUrl = "https://zomateen-backend.herokuapp.com/";
 
 export const AuthContext = createContext<AuthContextType>({
   loggedIn: false,
@@ -25,7 +24,7 @@ export const AuthContextProvider: React.FC = ({ children }) => {
     setLoading(true);
 
     await axios
-      .get("/api/user/getUser", {
+      .get(`${backendUrl}api/user/getUser`, {
         headers: {
           Authorization: "Bearer " + accessToken,
         },
@@ -45,13 +44,14 @@ export const AuthContextProvider: React.FC = ({ children }) => {
     setLoading(false);
 
     await axios
-      .post("/api/user/login", JSON.stringify(data), {
+      .post(`${backendUrl}api/user/login`, JSON.stringify(data), {
         headers: {
           Authorization: "Bearer " + accessToken,
           "Content-Type": "application/json",
         },
       })
       .then(async (res) => {
+        console.log(res);
         setLoggedIn(true);
         const at = res.data.accessToken.toString();
         const rt = res.data.refreshToken.toString();
@@ -88,11 +88,12 @@ export const AuthContextProvider: React.FC = ({ children }) => {
     password: string;
     phone: number;
   }) {
-    await fetch("/api/user/signup", {
+    await fetch(`${backendUrl}api/user/signup`, {
       method: "POST",
       mode: "cors",
       headers: {
         "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
       },
       referrerPolicy: "no-referrer",
       body: JSON.stringify(data),

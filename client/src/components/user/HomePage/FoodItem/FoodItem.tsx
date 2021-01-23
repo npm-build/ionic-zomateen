@@ -13,11 +13,18 @@ import React from "react";
 import { FoodType } from "../../../../react-app-env";
 import "./FoodItem.styles.css";
 
+const backendUrl = "https://zomateen-backend.herokuapp.com/";
+
 const FoodItem: React.FC<{ food: FoodType }> = ({ food }) => {
   return (
     <IonCard className="ion-padding fix-width-card">
       <IonCardHeader>
-        <IonImg style={{ width: "150px" }} src={food.filePath} alt="img" />
+        <IonImg
+          className="card-img"
+          style={{ width: "150px" }}
+          src={backendUrl + food.filePath}
+          alt="img"
+        />
       </IonCardHeader>
 
       <IonCardContent>

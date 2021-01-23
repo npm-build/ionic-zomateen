@@ -86,26 +86,33 @@ UserRouter.post("/api/user/signup", async (req: Request, res: Response) => {
   const { firstName, lastName, phone, userName, usn, password } = req.body;
   const bodypassword = password;
 
-  await userModel.findOne({ userName }).then((dbUser: UserType | null) => {
-    dbUser
-      ? res.send({ message: "User already exists" })
-      : bcrypt.hash(bodypassword, 7, async (err, hashedPassword) => {
-          if (err) return res.status(500).send({ error: err.message });
+  await userModel
+    .findOne({ userName })
+    .then((dbUser: UserType | null) => {
+      dbUser
+        ? res.send({ message: "User already exists" })
+        : bcrypt.hash(bodypassword, 7, async (err, hashedPassword) => {
+            if (err) return res.status(500).send({ error: err.message });
 
-          const user = new userModel({
-            firstName,
-            lastName,
-            phone,
-            userName,
-            usn,
-            password: hashedPassword,
+            const user = new userModel({
+              firstName,
+              lastName,
+              phone,
+              userName,
+              usn,
+              password: hashedPassword,
+            });
+
+            await user.save();
+            return res.send({
+              message: "Account created successfully!! Please LogIn",
+            });
           });
-          await user.save();
-          return res.send({
-            message: "Account created successfully!! Please LogIn",
-          });
-        });
-  });
+    })
+    .catch((e: any) => {
+      res.send({ error: e });
+      console.log(e);
+    });
 });
 
 UserRouter.patch(

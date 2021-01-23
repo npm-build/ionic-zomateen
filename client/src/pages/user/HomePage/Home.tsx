@@ -39,7 +39,7 @@ const Home: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-margin-top" fullscreen>
-        <IonGrid>
+        <IonGrid className="user-home-grid">
           <IonRow>
             <IonCol className="margin-sides">
               <IonSegment
@@ -61,7 +61,7 @@ const Home: React.FC = () => {
           <IonRow className="horizontal-scroll-row">
             {foodies ? (
               foodies.map((food) => (
-                <IonCol key={food.foodId} className="margin-sides">
+                <IonCol key={food.foodId}>
                   <FoodItem food={food} />
                 </IonCol>
               ))

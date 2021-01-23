@@ -5,12 +5,18 @@ import {
   IonTabBar,
   IonTabButton,
   IonTabs,
+  IonText,
 } from "@ionic/react";
 import React from "react";
-import { home as homeIcon, settings as settingsIcon } from "ionicons/icons";
+import {
+  home as homeIcon,
+  heartOutline as heartIcon,
+  settings as settingsIcon,
+} from "ionicons/icons";
 import { Route } from "react-router-dom";
 
 import HomePage from "../../pages/user/HomePage/Home";
+import FoodPage from "../../pages/user/FoodPage/FoodPage";
 
 function AppTabs() {
   return (
@@ -19,20 +25,21 @@ function AppTabs() {
         <Route exact path="/user/home">
           <HomePage />
         </Route>
-        {/* <Route exact path="/user/entries/add">
-	  <AddEntryPage />
-	</Route>
-	<Route exact path="/user/entries/view/:id">
-	  <EntryPage />
-	</Route> */}
-        {/* <Route exact path="/user/settings">
-	  <SettingsPage />
-	</Route> */}
+        <Route exact path="/user/favorites">
+          <HomePage />
+        </Route>
+        <Route exact path="/user/food/:id">
+          <FoodPage />
+        </Route>
       </IonRouterOutlet>
       <IonTabBar slot="bottom">
         <IonTabButton tab="home" href="/user/home">
           <IonIcon icon={homeIcon} />
           <IonLabel>Home</IonLabel>
+        </IonTabButton>
+        <IonTabButton tab="favorites" href="/user/favorites">
+          <IonIcon icon={heartIcon} />
+          <IonLabel>Favorites</IonLabel>
         </IonTabButton>
         <IonTabButton tab="settings" href="/user/settings">
           <IonIcon icon={settingsIcon} />
