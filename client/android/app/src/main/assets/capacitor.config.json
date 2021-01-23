@@ -1,0 +1,14 @@
+{
+  "appId": "com.npm_build.zomateen",
+  "appName": "zomateen",
+  "bundledWebRuntime": false,
+  "npmClient": "yarn",
+  "linuxAndroidStudioPath": "/home/jose/.local/share/JetBrains/Toolbox/apps/AndroidStudio/ch-0/201.6953283/bin/studio.sh",
+  "webDir": "build",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "cordova": {}
+}
