@@ -27,6 +27,10 @@ interface AuthContextType {
   loggedIn: boolean;
   loading: boolean;
   currentUser: UserType | null;
+  cookies: {
+    accessToken: string;
+    refreshToken: string;
+  } | null;
   login?: (string, string) => Promise<void>;
   signUp?: ({
     firstName: string,

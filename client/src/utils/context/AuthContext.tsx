@@ -9,6 +9,7 @@ export const AuthContext = createContext<AuthContextType>({
   loggedIn: false,
   loading: false,
   currentUser: null,
+  cookies: null,
 });
 
 export function useAuth(): AuthContextType {
@@ -19,19 +20,32 @@ export const AuthContextProvider: React.FC = ({ children }) => {
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [user, setUser] = useState<UserType | null>(null);
-  const [accessToken, setAccessToken] = useState<string>();
+  const [cookies, setCookies] = useState<{
+    accessToken: string;
+    refreshToken: string;
+  } | null>(null);
 
   async function getStuff() {
     await getUser();
   }
 
   useEffect(() => {
-    setAccessToken(Cookies.get("accessToken"));
+    if (
+      Cookies.get("accessToken") !== undefined &&
+      Cookies.get("refreshToken") !== undefined
+    ) {
+      const cookie = {
+        accessToken: Cookies.get("accessToken") as string,
+        refreshToken: Cookies.get("refreshToken") as string,
+      };
+
+      if (cookie) setCookies(cookie);
+    }
   }, []);
 
   useEffect(() => {
-    if (accessToken) getStuff();
-  }, [accessToken]);
+    if (cookies?.accessToken) getStuff();
+  }, [cookies]);
 
   async function getUser() {
     setLoading(true);
@@ -39,7 +53,7 @@ export const AuthContextProvider: React.FC = ({ children }) => {
     await axios
       .get(`${backendUrl}api/user/getUser`, {
         headers: {
-          Authorization: "Bearer " + accessToken,
+          Authorization: "Bearer " + cookies!.accessToken,
         },
       })
       .then((user) => {
@@ -59,7 +73,6 @@ export const AuthContextProvider: React.FC = ({ children }) => {
     await axios
       .post(`${backendUrl}api/user/login`, JSON.stringify(data), {
         headers: {
-          Authorization: "Bearer " + accessToken,
           "Content-Type": "application/json",
         },
       })
@@ -71,6 +84,9 @@ export const AuthContextProvider: React.FC = ({ children }) => {
 
         Cookies.remove("accessToken");
         Cookies.remove("refreshToken");
+
+        setCookies({ accessToken: at, refreshToken: rt });
+
         Cookies.set("accessToken", at, {
           secure: true,
           path: "/",
@@ -104,7 +120,6 @@ export const AuthContextProvider: React.FC = ({ children }) => {
       mode: "cors",
       headers: {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
       },
       referrerPolicy: "no-referrer",
       body: JSON.stringify(data),
@@ -124,6 +139,7 @@ export const AuthContextProvider: React.FC = ({ children }) => {
     currentUser: user,
     login,
     signUp,
+    cookies,
   };
 
   return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;

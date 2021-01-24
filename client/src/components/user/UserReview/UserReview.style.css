@@ -1,0 +1,36 @@
+.user-review {
+  position: relative;
+  min-height: 250px;
+}
+
+.user-review > img {
+  position: absolute;
+  width: 100px;
+  border: 2px solid #fbb346;
+  background-color: #fff;
+  padding: 5px;
+  z-index: 2;
+  border-radius: 20px;
+}
+
+.user-review > .user-review-text {
+  position: absolute;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  padding: 20px;
+  border: 2px solid #fbb346;
+  border-radius: 20px;
+}
+
+.user-review > .user-review-text > .text {
+  margin: 10px 0;
+  margin-left: 50px;
+}
+
+h4 {
+  font-weight: 700;
+}
+
+p {
+  font-size: 14px;
+}

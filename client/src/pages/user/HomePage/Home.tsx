@@ -20,6 +20,9 @@ import "./Home.css";
 
 const Home: React.FC = () => {
   const [segmentValue, setSegmentValue] = useState<string>("breakfast");
+  const [filteredFoodies, setFilteredFoodies] = useState<FoodType[] | null>(
+    null
+  );
 
   const { foodies, getFood } = useFood();
 
@@ -30,6 +33,21 @@ const Home: React.FC = () => {
   useEffect(() => {
     getStaticStuff();
   }, []);
+
+  function filterFoodies() {
+    const foods = foodies;
+    if (foods) {
+      const tempFoodies = foods.filter((food) =>
+        food.tags.includes(segmentValue)
+      );
+
+      if (tempFoodies) setFilteredFoodies(tempFoodies);
+    }
+  }
+
+  useEffect(() => {
+    filterFoodies();
+  }, [foodies, segmentValue]);
 
   return (
     <IonPage>
@@ -52,7 +70,7 @@ const Home: React.FC = () => {
                 <IonSegmentButton value="lunch">
                   <IonLabel>Lunch</IonLabel>
                 </IonSegmentButton>
-                <IonSegmentButton value="snacks">
+                <IonSegmentButton value="chats">
                   <IonLabel>Snacks</IonLabel>
                 </IonSegmentButton>
               </IonSegment>
@@ -60,7 +78,7 @@ const Home: React.FC = () => {
           </IonRow>
           <IonRow className="horizontal-scroll-row">
             {foodies ? (
-              foodies.map((food) => (
+              filteredFoodies?.map((food) => (
                 <IonCol key={food.foodId}>
                   <FoodItem food={food} />
                 </IonCol>
