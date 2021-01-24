@@ -36,6 +36,7 @@ UserRouter.get(
 );
 
 UserRouter.post("/api/user/login", async (req: Request, res: Response) => {
+  console.log(req.body);
   const userName = req.body.userName;
   const userPass = req.body.password;
 

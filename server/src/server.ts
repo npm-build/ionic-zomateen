@@ -1,6 +1,6 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import fileUpload from "express-fileupload";
-import cors from "cors";
+// import cors from "cors";
 
 import { UserRouter } from "./Routers/users";
 import { FoodRouter } from "./Routers/food";
@@ -10,11 +10,14 @@ import "./DB/db";
 
 const app = express();
 
-const corsOptions = {
-  origin: "*",
-};
-
-app.use(cors(corsOptions));
+app.use((_req: Request, res: Response, next: NextFunction) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Authorization, Accept"
+  );
+  next();
+});
 app.use(express.json());
 app.use(
   fileUpload({
