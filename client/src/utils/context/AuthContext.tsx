@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 
-const accessToken = Cookies.get("accessToken");
+// const backendUrl = "http://localhost:8000/";
 const backendUrl = "https://zomateen-backend.herokuapp.com/";
 
 export const AuthContext = createContext<AuthContextType>({
@@ -19,6 +19,19 @@ export const AuthContextProvider: React.FC = ({ children }) => {
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [user, setUser] = useState<UserType | null>(null);
+  const [accessToken, setAccessToken] = useState<string>();
+
+  async function getStuff() {
+    await getUser();
+  }
+
+  useEffect(() => {
+    setAccessToken(Cookies.get("accessToken"));
+  }, []);
+
+  useEffect(() => {
+    if (accessToken) getStuff();
+  }, [accessToken]);
 
   async function getUser() {
     setLoading(true);
@@ -59,20 +72,18 @@ export const AuthContextProvider: React.FC = ({ children }) => {
         Cookies.remove("accessToken");
         Cookies.remove("refreshToken");
         Cookies.set("accessToken", at, {
+          secure: true,
           path: "/",
           expires: new Date(new Date().getTime() + 40 * 60 * 1000),
-          secure: true,
           sameSite: "Strict",
         });
 
         Cookies.set("refreshToken", rt, {
+          secure: true,
           path: "/",
           expires: new Date(new Date().getTime() + 40 * 60 * 1000),
-          secure: true,
           sameSite: "Strict",
         });
-
-        await getUser();
       })
       .catch((e) => {
         console.log(e);

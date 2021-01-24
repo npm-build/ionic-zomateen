@@ -18,7 +18,6 @@ import {
 import { useAuth } from "../utils/context/AuthContext";
 
 function SignUpPage() {
-  const emailRef = useRef<HTMLIonInputElement>(null);
   const passwordRef = useRef<HTMLIonInputElement>(null);
   const confirmPasswordRef = useRef<HTMLIonInputElement>(null);
   const firstNameRef = useRef<HTMLIonInputElement>(null);
@@ -36,11 +35,7 @@ function SignUpPage() {
   async function handleSignUp() {
     setLoading(true);
 
-    if (
-      emailRef.current !== null &&
-      passwordRef.current !== null &&
-      confirmPasswordRef.current !== null
-    ) {
+    if (passwordRef.current !== null && confirmPasswordRef.current !== null) {
       if (passwordRef.current.value !== confirmPasswordRef.current.value) {
         setError(true);
         return;
@@ -97,10 +92,6 @@ function SignUpPage() {
           <IonItem>
             <IonLabel position="floating">Mobile Number</IonLabel>
             <IonInput ref={PhoneNumberRef} type="number" />
-          </IonItem>
-          <IonItem>
-            <IonLabel position="floating">Email</IonLabel>
-            <IonInput ref={emailRef} type="email" />
           </IonItem>
           <IonItem>
             <IonLabel position="floating">Password</IonLabel>

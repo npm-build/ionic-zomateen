@@ -20,7 +20,7 @@ import { useAuth } from "../utils/context/AuthContext";
 import { useHistory } from "react-router";
 
 function LoginPage() {
-  const emailRef = useRef<HTMLIonInputElement>(null);
+  const userNameRef = useRef<HTMLIonInputElement>(null);
   const passwordRef = useRef<HTMLIonInputElement>(null);
 
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
@@ -32,8 +32,8 @@ function LoginPage() {
 
   async function handleLogin() {
     setLoading(true);
-    if (emailRef.current !== null && passwordRef.current !== null) {
-      await login!(emailRef.current.value, passwordRef.current.value)
+    if (userNameRef.current !== null && passwordRef.current !== null) {
+      await login!(userNameRef.current.value, passwordRef.current.value)
         .then(() =>
           isAdmin ? history.push("/admin/home") : history.push("/user/home")
         )
@@ -62,8 +62,8 @@ function LoginPage() {
             <IonText>Admin</IonText>
           </IonItem>
           <IonItem>
-            <IonLabel position="floating">Email</IonLabel>
-            <IonInput ref={emailRef} type="email" />
+            <IonLabel position="floating">UserName</IonLabel>
+            <IonInput ref={userNameRef} type="text" />
           </IonItem>
           <IonItem>
             <IonLabel position="floating">Password</IonLabel>
