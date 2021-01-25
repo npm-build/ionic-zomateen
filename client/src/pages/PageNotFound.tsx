@@ -13,7 +13,7 @@ function PageNotFound() {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Page N0t F0und</IonTitle>
+          <IonTitle color="primary">Page N0t F0und</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen scroll-y="false">

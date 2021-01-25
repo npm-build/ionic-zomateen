@@ -14,7 +14,7 @@ import {
 } from "@ionic/react";
 import React, { useEffect, useState } from "react";
 
-import { useFood } from "../../../utils/context/FoodContext";
+import { useFood } from "../../../utils/FoodContext";
 import FoodItem from "../../../components/user/HomePage/FoodItem/FoodItem";
 import "./Home.css";
 
@@ -23,11 +23,11 @@ const Home: React.FC = () => {
   const [filteredFoodies, setFilteredFoodies] = useState<FoodType[] | null>(
     null
   );
-
-  const { foodies, getFood } = useFood();
+  const { foodies, getFood, getFavorites } = useFood();
 
   async function getStaticStuff() {
     await getFood();
+    await getFavorites();
   }
 
   useEffect(() => {
@@ -35,25 +35,24 @@ const Home: React.FC = () => {
   }, []);
 
   function filterFoodies() {
-    const foods = foodies;
-    if (foods) {
-      const tempFoodies = foods.filter((food) =>
-        food.tags.includes(segmentValue)
-      );
+    const foods = foodies!;
 
-      if (tempFoodies) setFilteredFoodies(tempFoodies);
-    }
+    const tempFoodies = foods.filter((food) =>
+      food.tags.includes(segmentValue)
+    );
+
+    if (tempFoodies) setFilteredFoodies(tempFoodies);
   }
 
   useEffect(() => {
-    filterFoodies();
+    if (foodies) filterFoodies();
   }, [foodies, segmentValue]);
 
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Home</IonTitle>
+          <IonTitle color="primary">Home</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-margin-top" fullscreen>

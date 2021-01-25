@@ -10,6 +10,10 @@ export const AuthContext = createContext<AuthContextType>({
   loading: false,
   currentUser: null,
   cookies: null,
+  errorContext: null,
+  login: async () => {},
+  signUp: async () => {},
+  updateUser: async () => {},
 });
 
 export function useAuth(): AuthContextType {
@@ -18,6 +22,7 @@ export function useAuth(): AuthContextType {
 
 export const AuthContextProvider: React.FC = ({ children }) => {
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
+  const [errorContext, setErrorContext] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [user, setUser] = useState<UserType | null>(null);
   const [cookies, setCookies] = useState<{
@@ -26,7 +31,7 @@ export const AuthContextProvider: React.FC = ({ children }) => {
   } | null>(null);
 
   async function getStuff() {
-    await getUser();
+    await updateUser();
   }
 
   useEffect(() => {
@@ -34,6 +39,8 @@ export const AuthContextProvider: React.FC = ({ children }) => {
       Cookies.get("accessToken") !== undefined &&
       Cookies.get("refreshToken") !== undefined
     ) {
+      setLoggedIn(true);
+
       const cookie = {
         accessToken: Cookies.get("accessToken") as string,
         refreshToken: Cookies.get("refreshToken") as string,
@@ -47,7 +54,7 @@ export const AuthContextProvider: React.FC = ({ children }) => {
     if (cookies?.accessToken) getStuff();
   }, [cookies]);
 
-  async function getUser() {
+  async function updateUser() {
     setLoading(true);
 
     await axios
@@ -56,10 +63,11 @@ export const AuthContextProvider: React.FC = ({ children }) => {
           Authorization: "Bearer " + cookies!.accessToken,
         },
       })
-      .then((user) => {
+      .then((res) => {
         setLoading(false);
-        setUser(user.data);
-      });
+        setUser(res.data);
+      })
+      .catch((e) => console.log(e));
   }
 
   async function login(userName: string, password: string) {
@@ -78,6 +86,10 @@ export const AuthContextProvider: React.FC = ({ children }) => {
       })
       .then(async (res) => {
         console.log(res);
+        if (res.data.error) {
+          return setErrorContext(res.data.error);
+        }
+
         setLoggedIn(true);
         const at = res.data.accessToken.toString();
         const rt = res.data.refreshToken.toString();
@@ -140,6 +152,8 @@ export const AuthContextProvider: React.FC = ({ children }) => {
     login,
     signUp,
     cookies,
+    errorContext,
+    updateUser,
   };
 
   return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;

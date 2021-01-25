@@ -68,7 +68,7 @@ const BlogPage: React.FC = () => {
 
               <div className="ion-margin">
                 <IonText color="light">
-                  <h1>Welcome to Zomateen</h1>
+                  <h1>Don't have and account yet?</h1>
                 </IonText>
                 <IonButton color="light" routerLink="/signup">
                   <IonText color="tertiary">SignUp</IonText>

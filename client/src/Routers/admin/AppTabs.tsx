@@ -1,6 +1,7 @@
 import {
   IonIcon,
   IonLabel,
+  IonLoading,
   IonRouterOutlet,
   IonTabBar,
   IonTabButton,
@@ -8,11 +9,22 @@ import {
 } from "@ionic/react";
 import React from "react";
 import { home as homeIcon, settings as settingsIcon } from "ionicons/icons";
-import { Route } from "react-router-dom";
+import { Redirect, Route } from "react-router-dom";
 
 import HomePage from "../../pages/admin/HomePage/Home";
+import { useAuth } from "../../utils/AuthContext";
 
 function AppTabs() {
+  const { loggedIn, loading } = useAuth();
+
+  if (loading) {
+    return <IonLoading isOpen />;
+  }
+
+  if (!loggedIn) {
+    return <Redirect to="/login" />;
+  }
+
   return (
     <IonTabs>
       <IonRouterOutlet>

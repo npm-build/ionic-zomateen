@@ -27,12 +27,14 @@ interface AuthContextType {
   loggedIn: boolean;
   loading: boolean;
   currentUser: UserType | null;
+  errorContext: string | null;
   cookies: {
     accessToken: string;
     refreshToken: string;
   } | null;
-  login?: (string, string) => Promise<void>;
-  signUp?: ({
+  updateUser: () => Promise<void>;
+  login: (userName: string, password: string) => Promise<void>;
+  signUp: ({
     firstName: string,
     lastName: string,
     userName: string,
@@ -44,7 +46,11 @@ interface AuthContextType {
 
 interface FoodContextType {
   foodies: FoodType[] | null;
+  favoriteFoodies: FoodType[] | null;
   getFood: () => Promise<void>;
+  getFavorites: () => Promise<void>;
+  addToFavorites: (foodId: number) => Promise<void>;
+  deleteFromFavorites: (foodId: number) => Promise<void>;
   // addFood?: (string, string) => Promise<void>;
   // signUp?: ({
   //   firstName: string,

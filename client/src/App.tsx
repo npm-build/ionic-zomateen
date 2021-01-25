@@ -1,11 +1,11 @@
 import React from "react";
-import { Route, Switch } from "react-router-dom";
+import { Redirect, Route, Switch } from "react-router-dom";
 import { IonApp, IonLoading } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 
-import { useAuth, AuthContextProvider } from "./utils/context/AuthContext";
-import { FoodContextProvider } from "./utils/context/FoodContext";
-import BlogPage from "./pages/BlogPage/BlogPage";
+import { useAuth, AuthContextProvider } from "./utils/AuthContext";
+import { FoodContextProvider } from "./utils/FoodContext";
+// import BlogPage from "./pages/BlogPage/BlogPage";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import PageNotFoundPage from "./pages/PageNotFound";
@@ -24,9 +24,9 @@ const App: React.FC = () => {
       <AuthContextProvider>
         <IonReactRouter>
           <Switch>
-            <Route exact path="/">
+            {/* <Route exact path="/">
               <BlogPage />
-            </Route>
+            </Route> */}
             <Route exact path="/login">
               <LoginPage />
             </Route>
@@ -40,6 +40,7 @@ const App: React.FC = () => {
               <Route path="/admin">
                 <AdminAppTabs />
               </Route>
+              <Redirect from="/" to="/user/home" />
             </FoodContextProvider>
             <Route path="/*">
               <PageNotFoundPage />

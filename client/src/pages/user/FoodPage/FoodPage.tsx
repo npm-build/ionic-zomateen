@@ -11,15 +11,15 @@ import {
   IonPage,
   IonRow,
   IonText,
-  IonTitle,
   IonToast,
   IonToolbar,
 } from "@ionic/react";
-import { add } from "ionicons/icons";
+import { add, heart, heartOutline } from "ionicons/icons";
 import React, { useEffect, useState } from "react";
-import { Redirect, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import UserReview from "../../../components/user/UserReview/UserReview";
-import { useFood } from "../../../utils/context/FoodContext";
+import { useAuth } from "../../../utils/AuthContext";
+import { useFood } from "../../../utils/FoodContext";
 
 import "./FoodPage.style.css";
 
@@ -28,12 +28,32 @@ const backendUrl = "https://zomateen-backend.herokuapp.com/";
 const FoodPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [food, setFood] = useState<FoodType | null>(null);
+  const [checked, setChecked] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
 
-  const { foodies } = useFood();
+  const { currentUser } = useAuth();
+  const {
+    foodies,
+    addToFavorites,
+    deleteFromFavorites,
+    getFavorites,
+  } = useFood();
+
+  async function doStuff() {
+    if (checked) {
+      setChecked((prevState) => !prevState);
+      await deleteFromFavorites(food?.foodId!);
+      await getFavorites();
+    } else {
+      setChecked((prevState) => !prevState);
+      await addToFavorites(food?.foodId!);
+      await getFavorites();
+    }
+  }
 
   useEffect(() => {
     if (foodies) {
+      setChecked(currentUser?.favorites.includes(parseInt(id))!);
       const tempFood = foodies.find((food) => food.foodId === parseInt(id));
 
       if (tempFood) setFood(tempFood);
@@ -62,13 +82,22 @@ const FoodPage: React.FC = () => {
         <IonGrid>
           <IonRow>
             <IonCol>
-              <img src={`${backendUrl}${food?.filePath}`} alt="img" />
+              <div className="fav-icon-div">
+                <img src={`${backendUrl}${food?.filePath}`} alt="img" />
+                <div className="fav-icon-button">
+                  <IonButton fill="clear" onClick={() => doStuff()}>
+                    <IonIcon
+                      color="primary"
+                      icon={checked ? heart : heartOutline}
+                    />
+                  </IonButton>
+                </div>
+              </div>
             </IonCol>
             <IonCol>
               <h2>{food?.name}</h2>
               <div className="flex">
                 <h3>Rs. {food?.price}</h3>
-
                 <IonButton>
                   <IonIcon slot="start" color="light" icon={add} />
                   <IonText color="light">Add To Cart</IonText>

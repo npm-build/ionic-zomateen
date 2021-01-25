@@ -15,7 +15,7 @@ import {
   IonToolbar,
 } from "@ionic/react";
 
-import { useAuth } from "../utils/context/AuthContext";
+import { useAuth } from "../utils/AuthContext";
 
 function SignUpPage() {
   const passwordRef = useRef<HTMLIonInputElement>(null);
@@ -50,7 +50,7 @@ function SignUpPage() {
         phone: PhoneNumberRef.current?.value as number,
       };
 
-      await signUp!(data)
+      await signUp(data)
         .then(() => {
           setLoading(false);
           setSuccess(true);
@@ -67,7 +67,7 @@ function SignUpPage() {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>SignUp</IonTitle>
+          <IonTitle color="primary">SignUp</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">

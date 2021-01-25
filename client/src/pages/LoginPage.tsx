@@ -16,8 +16,8 @@ import {
   IonToolbar,
 } from "@ionic/react";
 
-import { useAuth } from "../utils/context/AuthContext";
-import { useHistory } from "react-router";
+import { useAuth } from "../utils/AuthContext";
+import { Redirect, useHistory } from "react-router";
 
 function LoginPage() {
   const userNameRef = useRef<HTMLIonInputElement>(null);
@@ -27,19 +27,29 @@ function LoginPage() {
   const [error, setError] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const { login } = useAuth();
+  const { login, errorContext, loggedIn } = useAuth();
   const history = useHistory();
+
+  if (loggedIn) {
+    return <Redirect to="/user/home" />;
+  }
 
   async function handleLogin() {
     setLoading(true);
     if (userNameRef.current !== null && passwordRef.current !== null) {
-      await login!(userNameRef.current.value, passwordRef.current.value)
-        .then(() =>
-          isAdmin ? history.push("/admin/home") : history.push("/user/home")
-        )
+      await login(
+        userNameRef.current.value as string,
+        passwordRef.current.value as string
+      )
+        .then(() => {
+          if (errorContext) setError(true);
+          else
+            isAdmin ? history.push("/admin/home") : history.push("/user/home");
+        })
         .catch((e) => {
           console.log(e);
-          setError(e.code);
+          setError(true);
+          setLoading(false);
         });
     }
   }
@@ -48,7 +58,7 @@ function LoginPage() {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Login</IonTitle>
+          <IonTitle color="primary">Login</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
@@ -73,7 +83,7 @@ function LoginPage() {
         <IonToast
           isOpen={error}
           onDidDismiss={() => setError(false)}
-          message="Error Logging in!!! Please try later."
+          message="Error Logging in. Please try again later!!!"
           duration={5000}
           color="danger"
         />

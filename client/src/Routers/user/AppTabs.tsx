@@ -1,24 +1,37 @@
 import {
   IonIcon,
   IonLabel,
+  IonLoading,
   IonRouterOutlet,
   IonTabBar,
   IonTabButton,
   IonTabs,
-  IonText,
 } from "@ionic/react";
-import React from "react";
 import {
   home as homeIcon,
   heartOutline as heartIcon,
   settings as settingsIcon,
 } from "ionicons/icons";
-import { Route } from "react-router-dom";
+import React from "react";
+import { Redirect, Route } from "react-router-dom";
 
 import HomePage from "../../pages/user/HomePage/Home";
 import FoodPage from "../../pages/user/FoodPage/FoodPage";
+import FavoritesPage from "../../pages/user/Favorites/Favorites";
+
+import { useAuth } from "../../utils/AuthContext";
 
 function AppTabs() {
+  const { loggedIn, loading } = useAuth();
+
+  if (loading) {
+    return <IonLoading isOpen />;
+  }
+
+  if (!loggedIn) {
+    return <Redirect to="/login" />;
+  }
+
   return (
     <IonTabs>
       <IonRouterOutlet>
@@ -26,7 +39,7 @@ function AppTabs() {
           <HomePage />
         </Route>
         <Route exact path="/user/favorites">
-          <HomePage />
+          <FavoritesPage />
         </Route>
         <Route exact path="/user/food/:id">
           <FoodPage />
