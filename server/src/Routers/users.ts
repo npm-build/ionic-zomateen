@@ -101,6 +101,7 @@ UserRouter.post("/api/user/login", async (req: Request, res: Response) => {
 
 UserRouter.delete("/api/user/logout", async (req: Request, res: Response) => {
   const refresh_token = req.body.token;
+
   await refreshTokenModel
     .deleteOne({ token: refresh_token })
     .then(() => {
