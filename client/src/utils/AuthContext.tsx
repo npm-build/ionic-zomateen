@@ -67,7 +67,10 @@ export const AuthContextProvider: React.FC = ({ children }) => {
         setLoading(false);
         setUser(res.data);
       })
-      .catch((e) => console.log(e));
+      .catch((e) => {
+        setLoading(false);
+        console.log(e);
+      });
   }
 
   async function login(userName: string, password: string) {
@@ -76,20 +79,15 @@ export const AuthContextProvider: React.FC = ({ children }) => {
       password,
     };
 
-    setLoading(false);
+    setLoading(true);
 
     await axios
-      .post(`${backendUrl}api/user/login`, JSON.stringify(data), {
+      .post(`${backendUrl}api/user/login`, data, {
         headers: {
           "Content-Type": "application/json",
         },
       })
       .then(async (res) => {
-        console.log(res);
-        if (res.data.error) {
-          return setErrorContext(res.data.error);
-        }
-
         setLoggedIn(true);
         const at = res.data.accessToken.toString();
         const rt = res.data.refreshToken.toString();
@@ -112,8 +110,10 @@ export const AuthContextProvider: React.FC = ({ children }) => {
           expires: new Date(new Date().getTime() + 40 * 60 * 1000),
           sameSite: "Strict",
         });
+        setLoading(false);
       })
       .catch((e) => {
+        setLoading(false);
         console.log(e);
         throw new Error(e);
       });
@@ -127,6 +127,8 @@ export const AuthContextProvider: React.FC = ({ children }) => {
     password: string;
     phone: number;
   }) {
+    setLoading(true);
+
     await fetch(`${backendUrl}api/user/signup`, {
       method: "POST",
       mode: "cors",
@@ -137,9 +139,11 @@ export const AuthContextProvider: React.FC = ({ children }) => {
       body: JSON.stringify(data),
     })
       .then((res) => {
+        setLoading(false);
         return res.json();
       })
       .catch((e) => {
+        setLoading(false);
         console.log(e);
         throw new Error(e);
       });
