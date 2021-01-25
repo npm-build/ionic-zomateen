@@ -16,6 +16,7 @@ app.use((_req: Request, res: Response, next: NextFunction) => {
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Authorization, Accept"
   );
+  res.header("Access-Control-Allow-Methods", "GET,HEAD,POST,PATCH,DELETE");
   next();
 });
 app.use(express.json());

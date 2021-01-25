@@ -27,46 +27,61 @@ UserRouter.get("/api/user/dropDB", async (req: Request, res: Response) => {
 });
 
 UserRouter.get(
-  "/api/user/getUser",
+  "/api/user/getuser",
   authenticateToken,
   async (req: any, res: Response) => {
     const user: UserType = req.user;
-    return res.send(user);
+
+    await userModel
+      .findOne({ userName: user.userName })
+      .then((dbUser: UserType) => res.send(dbUser))
+      .catch((e: Error) =>
+        res.status(404).send({ error: e, message: "User not found!!!" })
+      );
   }
 );
 
 UserRouter.post("/api/user/login", async (req: Request, res: Response) => {
-  console.log(req.body);
   const userName = req.body.userName;
   const userPass = req.body.password;
 
   await userModel
     .findOne({ userName })
     .then((currentUser: UserType | null) => {
-      if (currentUser === null) return res.sendStatus(404);
+      if (currentUser === null)
+        return res.status(404).send({ error: "User not found!!!" });
 
-      bcrypt.compare(userPass, currentUser.password, async (err, result) => {
-        if (result) {
-          const user = {
-            userName: currentUser.userName,
-            usn: currentUser.usn,
-            password: currentUser.password,
-          };
-          const access_token = generateAccessTokenUser(currentUser);
-          const refresh_token = jwt.sign(user, REFRESH_TOKEN_SECRET);
+      bcrypt.compare(
+        userPass,
+        currentUser.password,
+        async (_: Error, result: boolean) => {
+          if (result) {
+            const user = {
+              userName: currentUser.userName,
+              usn: currentUser.usn,
+              password: currentUser.password,
+            };
+            const access_token = generateAccessTokenUser(currentUser);
+            const refresh_token = jwt.sign(user, REFRESH_TOKEN_SECRET);
 
-          const refreshToken = new refreshTokenModel({ token: refresh_token });
-          await refreshToken.save();
-          return res.send({
-            accessToken: access_token,
-            refreshToken: refresh_token,
-          });
+            const refreshToken = new refreshTokenModel({
+              token: refresh_token,
+            });
+            await refreshToken.save();
+            return res.send({
+              accessToken: access_token,
+              refreshToken: refresh_token,
+            });
+          } else
+            return res.status(400).send({
+              error: "Error logging in!!!",
+              message: "Passwords do not match!!!",
+            });
         }
-        return res.send({ error: "Error logging in!!!", msg: err });
-      });
+      );
     })
     .catch((err: Error) =>
-      res.send({ error: "Error logging in!!!", msg: err })
+      res.status(400).send({ error: "Error logging in!!!", msg: err })
     );
 });
 
@@ -74,12 +89,12 @@ UserRouter.delete("/api/user/logout", async (req: Request, res: Response) => {
   const refresh_token = req.body.token;
   await refreshTokenModel
     .deleteOne({ token: refresh_token })
-    .then((resp: any) => {
+    .then(() => {
       res.send("Logged out");
     })
     .catch((e: Error) => {
       console.log(e);
-      return res.send({ error: "Error logging out", msg: e });
+      return res.status(400).send({ error: "Error logging out", msg: e });
     });
 });
 
@@ -94,7 +109,10 @@ UserRouter.post("/api/user/signup", async (req: Request, res: Response) => {
         dbUser
           ? res.send({ message: "User already exists" })
           : bcrypt.hash(bodypassword, 7, async (err, hashedPassword) => {
-              if (err) return res.status(500).send({ error: err.message });
+              if (err)
+                return res
+                  .status(500)
+                  .send({ error: "Error!!!", message: err.message });
 
               const user = new userModel({
                 firstName,
@@ -139,11 +157,11 @@ UserRouter.patch(
   }
 );
 
-UserRouter.post(
+UserRouter.get(
   "/api/user/getfavorites",
   authenticateToken,
-  async (req: Request, res: Response) => {
-    const { usn } = req.body;
+  async (req: any, res: Response) => {
+    const { usn } = req.user;
 
     const user = await userModel.findOne({ usn });
 
@@ -176,9 +194,13 @@ UserRouter.patch(
 
     await userModel
       .updateOne({ usn }, { $pullAll: { favorites: [foodId] } })
-      .catch((e: Error) => console.error(e));
+      .catch((e: Error) =>
+        res
+          .status(400)
+          .send({ error: e, message: "Error removing from favorites!!!" })
+      );
 
-    return res.send({ msg: "Food removed from favorites successfully" });
+    return res.send({ msg: "Food removed from favorites successfully!!!" });
   }
 );
 

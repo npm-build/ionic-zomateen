@@ -41,8 +41,8 @@ export function authenticateToken(req: any, res: Response, next: NextFunction) {
     const user = {
       userName: doc.userName,
       usn: doc.usn,
-      password: doc.password,
     };
+
     req.user = user;
     next();
   });
