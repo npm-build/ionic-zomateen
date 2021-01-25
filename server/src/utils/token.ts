@@ -12,7 +12,7 @@ export function generateAccessTokenUser(doc: UserType) {
     usn: doc!.usn,
     password: doc!.password,
   };
-  return jwt.sign(user, ACCESS_TOKEN_SECRET, { expiresIn: "40m" });
+  return jwt.sign(user, ACCESS_TOKEN_SECRET, { expiresIn: "1d" });
 }
 
 export function generateAccessTokenAdmin(doc: AdminType) {

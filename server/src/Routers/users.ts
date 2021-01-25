@@ -2,7 +2,10 @@ import express, { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { db } from "../DB/db";
-import { refreshTokenModel } from "../DB/models/refreshTokens";
+import {
+  refreshTokenModel,
+  RefreshTokenType,
+} from "../DB/models/refreshTokens";
 import { authenticateToken } from "../utils/token";
 import { userModel, UserType } from "../DB/models/user";
 import { generateAccessTokenUser } from "../utils/token";
@@ -62,12 +65,23 @@ UserRouter.post("/api/user/login", async (req: Request, res: Response) => {
               password: currentUser.password,
             };
             const access_token = generateAccessTokenUser(currentUser);
-            const refresh_token = jwt.sign(user, REFRESH_TOKEN_SECRET);
+            const refresh_token = await refreshTokenModel
+              .findOne({ usn: user.usn })
+              .then(async (token: RefreshTokenType | undefined) => {
+                const rt = jwt.sign(user, REFRESH_TOKEN_SECRET);
 
-            const refreshToken = new refreshTokenModel({
-              token: refresh_token,
-            });
-            await refreshToken.save();
+                if (token) return token;
+                else {
+                  const refreshToken = new refreshTokenModel({
+                    token: rt,
+                    usn: user.usn,
+                  });
+
+                  await refreshToken.save();
+                  return rt;
+                }
+              });
+
             return res.send({
               accessToken: access_token,
               refreshToken: refresh_token,

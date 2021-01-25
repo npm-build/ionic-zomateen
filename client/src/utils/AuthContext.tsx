@@ -100,14 +100,14 @@ export const AuthContextProvider: React.FC = ({ children }) => {
         Cookies.set("accessToken", at, {
           secure: true,
           path: "/",
-          expires: new Date(new Date().getTime() + 40 * 60 * 1000),
+          expires: 1,
           sameSite: "Strict",
         });
 
         Cookies.set("refreshToken", rt, {
           secure: true,
           path: "/",
-          expires: new Date(new Date().getTime() + 40 * 60 * 1000),
+          expires: 365,
           sameSite: "Strict",
         });
         setLoading(false);
