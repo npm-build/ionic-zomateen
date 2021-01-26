@@ -18,6 +18,7 @@ import { Redirect, Route } from "react-router-dom";
 import HomePage from "../../pages/user/HomePage/Home";
 import FoodPage from "../../pages/user/FoodPage/FoodPage";
 import FavoritesPage from "../../pages/user/Favorites/Favorites";
+import SettingsPage from "../../pages/SettingsPage";
 
 import { useAuth } from "../../utils/AuthContext";
 
@@ -43,6 +44,9 @@ function AppTabs() {
         </Route>
         <Route exact path="/user/food/:id">
           <FoodPage />
+        </Route>
+        <Route exact path="/user/settings">
+          <SettingsPage />
         </Route>
       </IonRouterOutlet>
       <IonTabBar slot="bottom">

@@ -119,6 +119,19 @@ export const AuthContextProvider: React.FC = ({ children }) => {
       });
   }
 
+  async function LogOut() {
+    await axios
+      .delete(`${backendUrl}api/user/logout`, {
+        headers: {
+          Authorization: "Bearer " + cookies!.accessToken,
+        },
+      })
+      .then(() => {
+        Cookies.remove("accessToken");
+        Cookies.remove("refreshToken");
+      });
+  }
+
   async function signUp(data: {
     firstName: string;
     lastName: string;
