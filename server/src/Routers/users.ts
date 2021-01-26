@@ -100,17 +100,7 @@ UserRouter.post("/api/user/login", async (req: Request, res: Response) => {
 });
 
 UserRouter.delete("/api/user/logout", async (req: Request, res: Response) => {
-  const refresh_token = req.body.token;
-
-  await refreshTokenModel
-    .deleteOne({ token: refresh_token })
-    .then(() => {
-      res.send("Logged out");
-    })
-    .catch((e: Error) => {
-      console.log(e);
-      return res.status(400).send({ error: "Error logging out", msg: e });
-    });
+  return res.send("Logged out");
 });
 
 UserRouter.post("/api/user/signup", async (req: Request, res: Response) => {
