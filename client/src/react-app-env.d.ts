@@ -65,6 +65,7 @@ interface AuthContextType {
 }
 
 interface FoodContextType {
+  loading: boolean;
   foodies: FoodType[] | null;
   orders: OrderType[] | null;
   favoriteFoodies: FoodType[] | null;

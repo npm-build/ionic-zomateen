@@ -16,7 +16,7 @@ function UpdateStocksPage() {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle color="primary">Settings</IonTitle>
+          <IonTitle color="primary">Update Food Items</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen scroll-y="false">

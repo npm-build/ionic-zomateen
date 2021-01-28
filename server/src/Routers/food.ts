@@ -48,7 +48,6 @@ FoodRouter.post(
     await foodItem
       .save()
       .then(() => {
-        console.log("Food Item Added to cart successfully");
         return res.send({
           message: "Food Item Added to cart successfully",
           token,
@@ -93,7 +92,6 @@ FoodRouter.delete(
 
     await CartModel.deleteOne({ foodId })
       .then(() => {
-        console.log("Food Item successfully deleted from cart");
         return res.send({
           message: "Food Item successfully deleted from cart",
           token,
@@ -123,13 +121,11 @@ FoodRouter.post(
 
     const file: UploadedFile = req.files["filePath"] as UploadedFile;
 
-    console.log("moving");
     file.mv("./uploads/" + file.name, (err) => {
       if (err) {
         console.error(err);
         return res.status(500).send({ err, token });
       }
-      console.log("Done moving");
     });
 
     const filePath = `uploads/${file.name}`;

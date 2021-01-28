@@ -16,6 +16,8 @@ app.use((_req: Request, res: Response, next: NextFunction) => {
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Authorization, Accept, refreshToken"
   );
+  res.setHeader("Content-Type", "application/json");
+  res.setHeader("Content-Type", "multipart/form-data");
   res.header("Access-Control-Allow-Methods", "GET,HEAD,POST,PATCH,DELETE");
   next();
 });

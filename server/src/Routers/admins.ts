@@ -25,7 +25,6 @@ AdminRouter.get(
     const admin: AdminType = req.user;
 
     res.send({ user: admin, token });
-    console.log(admin);
   }
 );
 

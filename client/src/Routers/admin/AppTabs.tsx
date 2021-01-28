@@ -8,12 +8,17 @@ import {
   IonTabs,
 } from "@ionic/react";
 import React from "react";
-import { home as homeIcon, settings as settingsIcon } from "ionicons/icons";
+import {
+  add,
+  home as homeIcon,
+  settings as settingsIcon,
+} from "ionicons/icons";
 import { Redirect, Route } from "react-router-dom";
 
 import { useAuth } from "../../utils/AuthContext";
 
 import OrdersPage from "../../pages/admin/OrdersPage/OrdersPage";
+import AddFoodPage from "../../pages/admin/AddFoodPage/AddFoodPage";
 import IndividualOrderPage from "../../pages/admin/IndividualOrderPage/IndividualOrderPage";
 import SettingsPage from "../../pages/SettingsPage";
 
@@ -34,10 +39,10 @@ function AppTabs() {
         <Route exact path="/admin/orders">
           <OrdersPage />
         </Route>
-        {/* <Route exact path="/admin/entries/add">
-        <AddEntryPage />
-      </Route> */}
-        <Route exact path="/admin/order/:id">
+        <Route exact path="/admin/food/add">
+          <AddFoodPage />
+        </Route>
+        <Route path="/admin/order/:id">
           <IndividualOrderPage />
         </Route>
         <Route exact path="/admin/settings">
@@ -48,6 +53,10 @@ function AppTabs() {
         <IonTabButton tab="home" href="/admin/orders">
           <IonIcon icon={homeIcon} />
           <IonLabel>Home</IonLabel>
+        </IonTabButton>
+        <IonTabButton tab="add" href="/admin/food/add">
+          <IonIcon icon={add} />
+          <IonLabel>Add Food</IonLabel>
         </IonTabButton>
         <IonTabButton tab="settings" href="/admin/settings">
           <IonIcon icon={settingsIcon} />

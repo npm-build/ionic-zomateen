@@ -41,7 +41,7 @@ const FoodPage: React.FC = () => {
 
   useEffect(() => {
     if (foodies) {
-      setChecked(currentUser?.favorites.includes(parseInt(id))!);
+      setChecked(currentUser?.favorites?.includes(parseInt(id))!);
       const tempFood = foodies.find((food) => food.foodId === parseInt(id));
 
       if (tempFood) setFood(tempFood);

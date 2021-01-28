@@ -11,6 +11,7 @@ import {
   IonList,
   IonPage,
   IonRow,
+  IonText,
   IonThumbnail,
   IonToast,
   IonToolbar,
@@ -41,6 +42,14 @@ const IndividualOrderPage: React.FC = () => {
     else setError(true);
   }, []);
 
+  function formateDate(isoString: string) {
+    return new Date(isoString).toLocaleDateString("en-US", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  }
+
   return (
     <IonPage>
       <IonHeader>
@@ -62,18 +71,31 @@ const IndividualOrderPage: React.FC = () => {
         <IonGrid>
           <IonRow>
             <IonCol>
-              <h2>Order ID : {order?.orderId}</h2>
-            </IonCol>
-          </IonRow>
-          <IonRow>
-            <IonCol>
-              <h4>Customer Name : {order?.customerName}</h4>
-              <h4>Date Of order: {order?.dateOfOrder}</h4>
-              <h4>Message for the chef : {order?.messages}</h4>
-              <h4>Status : {order?.status}</h4>
-              <h4>Completed : {`${order?.isCompleted}`}</h4>
-              <h4>Ordered Items :</h4>
+              <IonText style={{ fontSize: "20px", fontWeight: "500" }}>
+                <h3 style={{ marginBottom: "0" }}>
+                  Customer Name : {order?.customerName}
+                </h3>
+              </IonText>
+              <IonText color="medium">
+                <h6 style={{ marginTop: "0" }}>Order ID : {order?.orderId}</h6>
+              </IonText>
+              <IonText>
+                <p>
+                  Date Of order : {formateDate(order?.dateOfOrder.toString()!)}
+                </p>
+                <p>Status : {order?.status}</p>
+                <p>Completed : {`${order?.isCompleted}`}</p>
+                <p>Message for the chef : {order?.messages}</p>
+              </IonText>
+              <IonText color="primary">
+                <h2 style={{ marginBottom: "0" }}>Ordered Items</h2>
+              </IonText>
               <IonList>
+                <IonItem>
+                  <IonLabel style={{ fontSize: "18px" }}>Food ID</IonLabel>
+                  <IonLabel style={{ fontSize: "18px" }}>Item Name</IonLabel>
+                  <IonThumbnail slot="end"></IonThumbnail>
+                </IonItem>
                 {foodies &&
                   order?.foodIds.map((foodId) => {
                     const food = foodies.find((fd) => fd.foodId === foodId);
@@ -88,9 +110,8 @@ const IndividualOrderPage: React.FC = () => {
                         <IonThumbnail slot="end">
                           <IonImg src={`${backendUrl}${food.filePath}`} />
                         </IonThumbnail>
-                        <IonLabel>
-                          {food.foodId} {food.name}
-                        </IonLabel>
+                        <IonLabel>Id : {food.foodId}</IonLabel>
+                        <IonLabel>{food.name}</IonLabel>
                       </IonItem>
                     );
                   })}

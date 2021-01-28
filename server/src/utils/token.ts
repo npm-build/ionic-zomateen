@@ -32,15 +32,17 @@ export function authenticateToken(req: any, res: Response, next: NextFunction) {
   const rt = req.headers.refreshToken;
 
   if (token === null) {
-    console.log("Token is null");
-    return res.sendStatus(401);
+    req.error = "Token is null";
+    next();
   }
 
   jwt.verify(token, ACCESS_TOKEN_SECRET, async (err: any, doc: any) => {
     if (err) {
       if (err.name === "TokenExpiredError") {
-        if (rt === null)
-          return res.status(401).send({ error: "Token not found" });
+        if (rt === null) {
+          req.error = "Token not found";
+          next();
+        }
 
         return await refreshTokenModel.findOne(
           { rt },
@@ -51,7 +53,11 @@ export function authenticateToken(req: any, res: Response, next: NextFunction) {
                 rt,
                 REFRESH_TOKEN_SECRET,
                 (err: any, currentUser: any) => {
-                  if (err) return res.sendStatus(403);
+                  if (err) {
+                    console.log(err);
+                    req.error = "Unknown Error";
+                    next();
+                  }
 
                   const access_token = generateAccessTokenUser(currentUser);
                   req.headers.authorization = "Bearer " + access_token;
@@ -61,7 +67,8 @@ export function authenticateToken(req: any, res: Response, next: NextFunction) {
           }
         );
       } else {
-        return { err: "Error verifying access token", code: 403 };
+        req.error = "Error verifying access token";
+        next();
       }
     }
 

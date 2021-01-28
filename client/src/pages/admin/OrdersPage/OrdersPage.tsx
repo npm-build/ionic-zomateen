@@ -44,7 +44,9 @@ const Home: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle size="large">All Orders</IonTitle>
+          <IonTitle size="large" color="primary">
+            All Orders
+          </IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
@@ -77,7 +79,10 @@ const Home: React.FC = () => {
                       routerLink={`/admin/order/${order.orderId}`}
                       key={order.orderId}
                     >
-                      <IonThumbnail slot="start">
+                      <IonThumbnail
+                        className="ion-padding-vertical"
+                        slot="start"
+                      >
                         <IonText color="medium">{order.orderId}</IonText>
                       </IonThumbnail>
                       <IonLabel>

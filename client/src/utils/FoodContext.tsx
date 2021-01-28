@@ -4,10 +4,11 @@ import axios from "axios";
 import { useAuth } from "./AuthContext";
 import Cookies from "js-cookie";
 
-// const backendUrl = "http://localhost:8000/";
-const backendUrl = "https://zomateen-backend.herokuapp.com/";
+const backendUrl = "http://localhost:8000/";
+// const backendUrl = "https://zomateen-backend.herokuapp.com/";
 
 export const FoodContext = createContext<FoodContextType>({
+  loading: false,
   foodies: null,
   favoriteFoodies: null,
   orders: null,
@@ -24,6 +25,7 @@ export function useFood(): FoodContextType {
 
 export const FoodContextProvider: React.FC = ({ children }) => {
   const { cookies, currentUser } = useAuth();
+  const [loading, setLoading] = useState<boolean>(false);
   const [orders, setOrders] = useState<OrderType[] | null>(null);
   const [favoriteFoodies, setFavoriteFoodies] = useState<FoodType[] | null>(
     null
@@ -45,6 +47,8 @@ export const FoodContextProvider: React.FC = ({ children }) => {
   }
 
   async function getFood() {
+    setLoading(true);
+
     await axios
       .get(`${backendUrl}api/getfoodies`, {
         headers: {
@@ -55,13 +59,19 @@ export const FoodContextProvider: React.FC = ({ children }) => {
       .then((res) => {
         setFoodItems(res.data.foodies);
         checkToken(res.data.token);
+        setLoading(false);
       })
-      .catch((e) => console.log(e));
+      .catch((e) => {
+        console.log(e);
+        setLoading(false);
+      });
   }
 
   // Favorites
 
   async function getFavorites() {
+    setLoading(true);
+
     await axios
       .get(`${backendUrl}api/user/getfavorites`, {
         headers: {
@@ -70,13 +80,19 @@ export const FoodContextProvider: React.FC = ({ children }) => {
         },
       })
       .then((res) => {
+        console.log(res);
         setFavoriteFoodies(res.data.favorites);
         checkToken(res.data.token);
+        setLoading(false);
       })
-      .catch((e) => console.log(e));
+      .catch((e) => {
+        console.log(e);
+        setLoading(false);
+      });
   }
 
   async function addToFavorites(foodId: number) {
+    setLoading(true);
     const data = { usn: currentUser?.usn, foodId };
 
     await axios
@@ -88,11 +104,16 @@ export const FoodContextProvider: React.FC = ({ children }) => {
       })
       .then((res) => {
         checkToken(res.data.token);
+        setLoading(false);
       })
-      .catch((e) => console.log(e));
+      .catch((e) => {
+        console.log(e);
+        setLoading(false);
+      });
   }
 
   async function deleteFromFavorites(foodId: number) {
+    setLoading(true);
     const data = { usn: currentUser?.usn, foodId };
 
     await axios
@@ -104,13 +125,19 @@ export const FoodContextProvider: React.FC = ({ children }) => {
       })
       .then((res) => {
         checkToken(res.data.token);
+        setLoading(false);
       })
-      .catch((e) => console.log(e));
+      .catch((e) => {
+        console.log(e);
+        setLoading(false);
+      });
   }
 
   // Orders
 
   async function getOrders() {
+    setLoading(true);
+
     await axios
       .get(`${backendUrl}api/order/getorders`, {
         headers: {
@@ -121,11 +148,16 @@ export const FoodContextProvider: React.FC = ({ children }) => {
       .then((res) => {
         setOrders(res.data.orders);
         checkToken(res.data.token);
+        setLoading(false);
       })
-      .catch((e) => console.log(e));
+      .catch((e) => {
+        console.log(e);
+        setLoading(false);
+      });
   }
 
   const foodies: FoodContextType = {
+    loading,
     foodies: foodItems,
     orders,
     favoriteFoodies,

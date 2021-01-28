@@ -2,8 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 
-// const backendUrl = "http://localhost:8000/";
-const backendUrl = "https://zomateen-backend.herokuapp.com/";
+const backendUrl = "http://localhost:8000/";
+// const backendUrl = "https://zomateen-backend.herokuapp.com/";
 
 export const AuthContext = createContext<AuthContextType>({
   loggedIn: false,
@@ -26,7 +26,10 @@ const isAdmin = Cookies.get("isAdmin");
 
 export const AuthContextProvider: React.FC = ({ children }) => {
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
-  const [redirectUrl, setRedirectUrl] = useState<string>("/user/home");
+  const [redirectUrl, setRedirectUrl] = useState<string>(() => {
+    const isAdmin = Cookies.get("isAdmin");
+    return isAdmin === "true" ? "/admin/orders" : "/user/home";
+  });
   const [errorContext, setErrorContext] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [user, setUser] = useState<UserType | null>(null);
@@ -75,7 +78,7 @@ export const AuthContextProvider: React.FC = ({ children }) => {
   }
 
   async function updateUser() {
-    let apiRoute =
+    const apiRoute =
       redirectUrl === "/admin/orders"
         ? "api/admin/getUser"
         : "api/user/getUser";
@@ -101,11 +104,12 @@ export const AuthContextProvider: React.FC = ({ children }) => {
   }
 
   async function login(userName: string, password: string, userType: string) {
+    setLoading(true);
+
     const data = {
       userName,
       password,
     };
-    setLoading(true);
     const apiUrl = userType === "admin" ? "api/admin/login" : "api/user/login";
 
     if (userType === "admin") setRedirectUrl("/admin/orders");
@@ -143,8 +147,18 @@ export const AuthContextProvider: React.FC = ({ children }) => {
         });
 
         userType === "admin"
-          ? Cookies.set("isAdmin", "true")
-          : Cookies.set("isAdmin", "false");
+          ? Cookies.set("isAdmin", "true", {
+              secure: true,
+              path: "/",
+              expires: 365,
+              sameSite: "Strict",
+            })
+          : Cookies.set("isAdmin", "false", {
+              secure: true,
+              path: "/",
+              expires: 365,
+              sameSite: "Strict",
+            });
 
         setLoading(false);
       })
@@ -169,6 +183,7 @@ export const AuthContextProvider: React.FC = ({ children }) => {
       .then(() => {
         Cookies.remove("accessToken");
         Cookies.remove("refreshToken");
+        Cookies.remove("isAdmin");
         setLoggedIn(false);
       })
       .catch((e) => console.log(e));
