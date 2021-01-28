@@ -13,16 +13,22 @@ import {
   IonText,
 } from "@ionic/react";
 import React, { useState } from "react";
-import { useFood } from "../../../utils/FoodContext";
+import { Redirect } from "react-router";
 
 import "./Favorites.style.css";
+import { useAuth } from "../../../utils/AuthContext";
+import { useFood } from "../../../utils/FoodContext";
 
 const backendUrl = "https://zomateen-backend.herokuapp.com/";
 
 function Favorites() {
   const [error, setError] = useState<boolean>(false);
-
   const { favoriteFoodies } = useFood();
+  const { loggedIn } = useAuth();
+
+  if (!loggedIn) {
+    return <Redirect to="/login" />;
+  }
 
   return (
     <IonPage>
@@ -41,7 +47,11 @@ function Favorites() {
         />
         <IonList>
           {favoriteFoodies?.map((food) => (
-            <IonItem key={food.foodId}>
+            <IonItem
+              button
+              routerLink={`/user/food/${food.foodId}`}
+              key={food.foodId}
+            >
               <IonThumbnail slot="end">
                 <IonImg src={`${backendUrl}${food.filePath}`} />
               </IonThumbnail>

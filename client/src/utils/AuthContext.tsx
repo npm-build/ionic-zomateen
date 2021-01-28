@@ -2,16 +2,18 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 
-// const backendUrl = "http://localhost:8000/";
-const backendUrl = "https://zomateen-backend.herokuapp.com/";
+const backendUrl = "http://localhost:8000/";
+// const backendUrl = "https://zomateen-backend.herokuapp.com/";
 
 export const AuthContext = createContext<AuthContextType>({
   loggedIn: false,
+  redirectUrl: "",
   loading: false,
   currentUser: null,
   cookies: null,
   errorContext: null,
   login: async () => {},
+  logOut: async () => {},
   signUp: async () => {},
   updateUser: async () => {},
 });
@@ -20,8 +22,11 @@ export function useAuth(): AuthContextType {
   return useContext(AuthContext);
 }
 
+const isAdmin = Cookies.get("isAdmin");
+
 export const AuthContextProvider: React.FC = ({ children }) => {
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
+  const [redirectUrl, setRedirectUrl] = useState<string>("/user/home");
   const [errorContext, setErrorContext] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [user, setUser] = useState<UserType | null>(null);
@@ -30,42 +35,65 @@ export const AuthContextProvider: React.FC = ({ children }) => {
     refreshToken: string;
   } | null>(null);
 
-  async function getStuff() {
-    await updateUser();
-  }
-
   useEffect(() => {
+    if (isAdmin === "true") {
+      setRedirectUrl("/admin/orders");
+    }
+
     if (
       Cookies.get("accessToken") !== undefined &&
       Cookies.get("refreshToken") !== undefined
     ) {
-      setLoggedIn(true);
-
       const cookie = {
         accessToken: Cookies.get("accessToken") as string,
         refreshToken: Cookies.get("refreshToken") as string,
       };
 
-      if (cookie) setCookies(cookie);
+      if (cookie) {
+        setCookies(cookie);
+        setLoggedIn(true);
+      }
     }
   }, []);
 
   useEffect(() => {
-    if (cookies?.accessToken) getStuff();
+    if (cookies?.accessToken) updateUser();
   }, [cookies]);
 
+  function checkToken(token: string) {
+    const accessToken = Cookies.get("accessToken");
+
+    if (accessToken === token) {
+      Cookies.remove("accessToken");
+      Cookies.set("accessToken", token, {
+        secure: true,
+        path: "/",
+        expires: 1,
+        sameSite: "Strict",
+      });
+    }
+  }
+
   async function updateUser() {
-    setLoading(true);
+    let apiRoute =
+      redirectUrl === "/admin/orders"
+        ? "api/admin/getUser"
+        : "api/user/getUser";
+
+    setLoggedIn(true);
 
     await axios
-      .get(`${backendUrl}api/user/getUser`, {
+      .get(`${backendUrl}${apiRoute}`, {
         headers: {
           Authorization: "Bearer " + cookies!.accessToken,
+          refreshToken: cookies!.refreshToken,
         },
       })
       .then((res) => {
         setLoading(false);
-        setUser(res.data);
+        console.log(res);
+        setUser(res.data.user);
+        checkToken(res.data.token);
       })
       .catch((e) => {
         setLoading(false);
@@ -73,16 +101,19 @@ export const AuthContextProvider: React.FC = ({ children }) => {
       });
   }
 
-  async function login(userName: string, password: string) {
+  async function login(userName: string, password: string, userType: string) {
     const data = {
       userName,
       password,
     };
-
     setLoading(true);
+    const apiUrl = userType === "admin" ? "api/admin/login" : "api/user/login";
+
+    if (userType === "admin") setRedirectUrl("/admin/orders");
+    else setRedirectUrl("/user/home");
 
     await axios
-      .post(`${backendUrl}api/user/login`, data, {
+      .post(`${backendUrl}${apiUrl}`, data, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -92,6 +123,7 @@ export const AuthContextProvider: React.FC = ({ children }) => {
         const at = res.data.accessToken.toString();
         const rt = res.data.refreshToken.toString();
 
+        Cookies.remove("isAdmin");
         Cookies.remove("accessToken");
         Cookies.remove("refreshToken");
 
@@ -110,6 +142,11 @@ export const AuthContextProvider: React.FC = ({ children }) => {
           expires: 365,
           sameSite: "Strict",
         });
+
+        userType === "admin"
+          ? Cookies.set("isAdmin", "true")
+          : Cookies.set("isAdmin", "false");
+
         setLoading(false);
       })
       .catch((e) => {
@@ -119,41 +156,60 @@ export const AuthContextProvider: React.FC = ({ children }) => {
       });
   }
 
-  async function LogOut() {
+  async function logOut() {
+    const apiRoute =
+      redirectUrl === "/admin/orders" ? "api/admin/logout" : "api/user/logout";
+
     await axios
-      .delete(`${backendUrl}api/user/logout`, {
+      .delete(`${backendUrl}${apiRoute}`, {
         headers: {
           Authorization: "Bearer " + cookies!.accessToken,
+          refreshToken: cookies!.refreshToken,
         },
       })
       .then(() => {
         Cookies.remove("accessToken");
         Cookies.remove("refreshToken");
-      });
+        setLoggedIn(false);
+      })
+      .catch((e) => console.log(e));
   }
 
-  async function signUp(data: {
-    firstName: string;
-    lastName: string;
-    userName: string;
-    usn: string;
-    password: string;
-    phone: number;
-  }) {
+  async function signUp(
+    data: {
+      firstName: string;
+      lastName: string;
+      userName: string;
+      usn: string;
+      password: string;
+      phone: number;
+    },
+    userType: string
+  ) {
     setLoading(true);
+    let apiUrl = "api/user/signup";
+    const realData = [];
 
-    await fetch(`${backendUrl}api/user/signup`, {
-      method: "POST",
-      mode: "cors",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      referrerPolicy: "no-referrer",
-      body: JSON.stringify(data),
-    })
-      .then((res) => {
+    if (userType === "admin") {
+      apiUrl = "api/admin/signup";
+      realData.push({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        userName: data.userName,
+        collegeId: data.usn,
+        password: data.password,
+        phone: data.phone,
+      });
+    }
+
+    await axios
+      .post(`${backendUrl}${apiUrl}`, realData[0], {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then(() => {
         setLoading(false);
-        return res.json();
       })
       .catch((e) => {
         setLoading(false);
@@ -164,7 +220,9 @@ export const AuthContextProvider: React.FC = ({ children }) => {
 
   const auth: AuthContextType = {
     loggedIn,
+    redirectUrl,
     loading,
+    logOut,
     currentUser: user,
     login,
     signUp,

@@ -5,6 +5,7 @@ interface UserType {
   lastName: string;
   userName: string;
   usn: string;
+  collegeId?: string;
   password: string;
   phone: number;
   noOfCancels: number;
@@ -23,8 +24,19 @@ interface FoodType {
   addOns: string[];
 }
 
+interface OrderType {
+  foodIds: number[];
+  customerNames: string;
+  orderId: number;
+  messages: string;
+  status: string;
+  isCompleted: boolean;
+  dateOfOrder: Date;
+}
+
 interface AuthContextType {
   loggedIn: boolean;
+  redirectUrl: string;
   loading: boolean;
   currentUser: UserType | null;
   errorContext: string | null;
@@ -33,22 +45,32 @@ interface AuthContextType {
     refreshToken: string;
   } | null;
   updateUser: () => Promise<void>;
-  login: (userName: string, password: string) => Promise<void>;
-  signUp: ({
-    firstName: string,
-    lastName: string,
+  logOut: () => Promise<void>;
+  login: (
     userName: string,
-    usn: string,
     password: string,
-    phone: number,
-  }) => Promise<void>;
+    userType: string
+  ) => Promise<void>;
+  signUp: (
+    {
+      firstName: string,
+      lastName: string,
+      userName: string,
+      usn: string,
+      password: string,
+      phone: number,
+    },
+    userType: string
+  ) => Promise<void>;
 }
 
 interface FoodContextType {
   foodies: FoodType[] | null;
+  orders: OrderType[] | null;
   favoriteFoodies: FoodType[] | null;
   getFood: () => Promise<void>;
   getFavorites: () => Promise<void>;
+  getOrders: () => Promise<void>;
   addToFavorites: (foodId: number) => Promise<void>;
   deleteFromFavorites: (foodId: number) => Promise<void>;
   // addFood?: (string, string) => Promise<void>;

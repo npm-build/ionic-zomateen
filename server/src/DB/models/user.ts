@@ -9,6 +9,7 @@ export interface UserType extends Document {
   phone: number;
   noOfCancels: number;
   favorites: number[];
+  isAdmin: boolean;
 }
 
 export const userSchema: Schema = new Schema({
@@ -20,6 +21,7 @@ export const userSchema: Schema = new Schema({
   phone: { type: Number, required: true, unique: true },
   noOfCancels: { type: Number, default: 0 },
   favorites: [{ type: Number, unique: true }],
+  isAdmin: { type: Boolean, default: false },
 });
 
 // Creating the Models

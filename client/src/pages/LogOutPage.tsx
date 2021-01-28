@@ -1,27 +1,16 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import {
   IonButton,
   IonContent,
   IonHeader,
-  IonInput,
-  IonItem,
-  IonLabel,
-  IonList,
   IonLoading,
   IonPage,
-  IonText,
   IonTitle,
-  IonToast,
-  IonToggle,
   IonToolbar,
 } from "@ionic/react";
 
 function LogOutPage() {
   const [loading, setLoading] = useState<boolean>(false);
-
-  // async function handleLogOut() {
-  // 	await
-  // }
 
   return (
     <IonPage>

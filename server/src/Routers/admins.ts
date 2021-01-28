@@ -1,10 +1,12 @@
 import express, { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { db } from "../DB/db";
-import { refreshTokenModel } from "../DB/models/refreshTokens";
+import {
+  refreshTokenModel,
+  RefreshTokenType,
+} from "../DB/models/refreshTokens";
 import { AdminModel, AdminType } from "../DB/models/admin";
-import { generateAccessTokenAdmin } from "../utils/token";
+import { authenticateToken, generateAccessTokenAdmin } from "../utils/token";
 export const AdminRouter = express.Router();
 
 const REFRESH_TOKEN_SECRET =
@@ -15,10 +17,22 @@ AdminRouter.get("/api/admins", async (req: Request, res: Response) => {
   res.send(users);
 });
 
-AdminRouter.get("/api/admin/dropDB", async (req: Request, res: Response) => {
-  await db.dropDatabase();
-  res.send({ msg: "Db dropped" });
-});
+AdminRouter.get(
+  "/api/admin/getuser",
+  authenticateToken,
+  async (req: any, res: Response) => {
+    const token = req.headers.authorization!.split(" ")[1];
+    const admin: AdminType = req.user;
+
+    res.send({ user: admin, token });
+    console.log(admin);
+  }
+);
+
+// AdminRouter.get("/api/admin/dropDB", async (req: Request, res: Response) => {
+//   await db.dropDatabase();
+//   res.send({ msg: "Db dropped" });
+// });
 
 AdminRouter.post("/api/admin/login", async (req: Request, res: Response) => {
   const userName = req.body.userName;
@@ -39,14 +53,32 @@ AdminRouter.post("/api/admin/login", async (req: Request, res: Response) => {
           const access_token = generateAccessTokenAdmin(currentUser);
           const refresh_token = jwt.sign(user, REFRESH_TOKEN_SECRET);
 
-          const refreshToken = new refreshTokenModel({ token: refresh_token });
-          await refreshToken.save();
-          return res.send({
-            accessToken: access_token,
-            refreshToken: refresh_token,
-          });
+          await refreshTokenModel
+            .findOne({ usn: user.collegeId })
+            .then(async (rt: RefreshTokenType | null) => {
+              if (rt) {
+                return res.send({
+                  accessToken: access_token,
+                  refreshToken: rt.token,
+                });
+              }
+
+              const refreshToken = new refreshTokenModel({
+                token: refresh_token,
+                usn: user.collegeId,
+              });
+
+              await refreshToken.save();
+              return res.send({
+                accessToken: access_token,
+                refreshToken: refresh_token,
+              });
+            })
+            .catch((e: Error) => {
+              console.log(e);
+              return res.send({ error: "Error Logging in!!!", msg: e });
+            });
         }
-        return res.send({ error: "Error logging in!!!", msg: err });
       });
     })
     .catch((err: Error) =>
@@ -54,28 +86,24 @@ AdminRouter.post("/api/admin/login", async (req: Request, res: Response) => {
     );
 });
 
-AdminRouter.get("/api/admin/logout", async (req: Request, res: Response) => {
-  const refresh_token = req.body.token;
-  await refreshTokenModel
-    .deleteOne({ token: refresh_token })
-    .then(() => {
-      res.send("Logged out");
-    })
-    .catch((e: Error) => {
-      console.log(e);
-      return res.send({ error: "Error logging out", msg: e });
-    });
-});
+AdminRouter.delete(
+  "/api/admin/logout",
+  authenticateToken,
+  async (req: any, res: Response) => {
+    const user = req.user;
+    const token = req.headers.authorization!.split(" ")[1];
+
+    await refreshTokenModel
+      .findOneAndDelete({ usn: user.usn })
+      .then(() => res.send({ error: "Logged out", token }))
+      .catch((e: Error) => res.send({ error: e, token }));
+  }
+);
 
 AdminRouter.post("/api/admin/signup", async (req: Request, res: Response) => {
-  const {
-    collegeId,
-    firstName,
-    lastName,
-    userName,
-    phone,
-    bodypassword,
-  } = req.body;
+  const { collegeId, firstName, lastName, userName, phone } = req.body;
+  const bodypassword = req.body.password;
+
   const dbUser = await AdminModel.findOne({ userName }).catch((e: Error) => {
     console.log(e);
     return res.status(401).send({ error: "Error creating user" });
@@ -124,25 +152,25 @@ AdminRouter.patch(
   }
 );
 
-AdminRouter.post("/api/admin/token", async (req, res) => {
-  const refresh_token = req.body.token;
-  if (refresh_token === null) return res.sendStatus(401);
+// AdminRouter.post("/api/admin/token", async (req, res) => {
+//   const refresh_token = req.body.token;
+//   if (refresh_token === null) return res.sendStatus(401);
 
-  await refreshTokenModel.findOne(
-    { refresh_token },
-    (err: Error, token: string) => {
-      if (err) return res.sendStatus(403);
-      if (refresh_token === token) {
-        jwt.verify(
-          refresh_token,
-          REFRESH_TOKEN_SECRET,
-          (err: any, currentUser: any) => {
-            if (err) return res.sendStatus(403);
-            const access_token = generateAccessTokenAdmin(currentUser);
-            return res.json({ accessToken: access_token });
-          }
-        );
-      }
-    }
-  );
-});
+//   await refreshTokenModel.findOne(
+//     { refresh_token },
+//     (err: Error, token: string) => {
+//       if (err) return res.sendStatus(403);
+//       if (refresh_token === token) {
+//         jwt.verify(
+//           refresh_token,
+//           REFRESH_TOKEN_SECRET,
+//           (err: any, currentUser: any) => {
+//             if (err) return res.sendStatus(403);
+//             const access_token = generateAccessTokenAdmin(currentUser);
+//             return res.json({ accessToken: access_token });
+//           }
+//         );
+//       }
+//     }
+//   );
+// });

@@ -8,22 +8,10 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import React from "react";
-import { Redirect, useHistory } from "react-router";
 
-import { useAuth } from "../utils/AuthContext";
+import "./UpdateStocksPage.style.css";
 
-function SettingsPage() {
-  const { logOut, loggedIn } = useAuth();
-  const history = useHistory();
-
-  if (!loggedIn) {
-    return <Redirect to="/login" />;
-  }
-
-  async function LogOut() {
-    await logOut().then(() => history.push("/login"));
-  }
-
+function UpdateStocksPage() {
   return (
     <IonPage>
       <IonHeader>
@@ -33,7 +21,7 @@ function SettingsPage() {
       </IonHeader>
       <IonContent fullscreen scroll-y="false">
         <IonText>
-          <IonButton expand="block" color="medium" onClick={LogOut}>
+          <IonButton expand="block" color="medium">
             LogOut
           </IonButton>
         </IonText>
@@ -42,4 +30,4 @@ function SettingsPage() {
   );
 }
 
-export default SettingsPage;
+export default UpdateStocksPage;

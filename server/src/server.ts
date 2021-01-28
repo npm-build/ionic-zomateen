@@ -14,7 +14,7 @@ app.use((_req: Request, res: Response, next: NextFunction) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Authorization, Accept"
+    "Origin, X-Requested-With, Content-Type, Authorization, Accept, refreshToken"
   );
   res.header("Access-Control-Allow-Methods", "GET,HEAD,POST,PATCH,DELETE");
   next();

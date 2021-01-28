@@ -7,17 +7,13 @@ import { authenticateToken } from "../utils/token";
 
 export const OrderRouter = express.Router();
 
-// OrderRouter.get("/api/food/dropDB", async (req: Request, res: Response) => {
-//   await db.dropDatabase();
-//   res.send({ msg: "Db dropped" });
-// });
-
 OrderRouter.get(
   "/api/order/getorders",
   authenticateToken,
   async (req: Request, res: Response) => {
-    const foodies = await OrderModel.find({});
-    res.send(foodies);
+    const token = req.headers.authorization!.split(" ")[1];
+    const orders = await OrderModel.find({});
+    res.send({ orders, token });
   }
 );
 
@@ -25,6 +21,7 @@ OrderRouter.post(
   "/api/order/add",
   authenticateToken,
   async (req: Request, res: Response) => {
+    const token = req.headers.authorization!.split(" ")[1];
     const { foodIds, customerName, messages } = req.body;
 
     const OrderItem: OrderType = new OrderModel({
@@ -35,11 +32,13 @@ OrderRouter.post(
 
     await OrderItem.save()
       .then(async (resp) => {
-        return res.send({ message: "Order successfully placed" });
+        return res.send({ message: "Order successfully placed", token });
       })
       .catch((e: Error) => {
         console.log(e);
-        return res.status(401).send({ error: "Error placing your order" });
+        return res
+          .status(401)
+          .send({ error: "Error placing your order", token });
       });
   }
 );
@@ -49,14 +48,11 @@ OrderRouter.patch(
   authenticateToken,
   authenticateUser,
   async (req: Request, res: Response) => {
+    const token = req.headers.authorization!.split(" ")[1];
     const { orderId, status, isCompleted } = req.body;
-    console.log({ orderId, status, isCompleted });
 
     await OrderModel.updateOne({ orderId }, { status, isCompleted })
-      .then(() => {
-        console.log("Updated Order!!!");
-        res.send({ message: "Updated Order!!!" });
-      })
+      .then(() => res.send({ message: "Updated Order!!!", token }))
       .catch((e: Error) => {
         console.error(e);
       });
@@ -68,17 +64,18 @@ OrderRouter.delete(
   authenticateToken,
   authenticateUser,
   async (req: Request, res: Response) => {
+    const token = req.headers.authorization!.split(" ")[1];
     const { orderId } = req.body;
     console.log(orderId);
 
     await OrderModel.deleteOne({ orderId })
       .then(() => {
         console.log("Order removed");
-        return res.send({ message: "Order removed" });
+        return res.send({ message: "Order removed", token });
       })
       .catch((e: Error) => {
         console.log(e);
-        return res.status(401).send({ error: "Error removing order" });
+        return res.status(401).send({ error: "Error removing order", token });
       });
   }
 );
@@ -87,6 +84,6 @@ function authenticateUser(req: any, res: Response, next: NextFunction) {
   const user = req.user;
   if (user.usn) {
     console.log("Error authenticating user!!!");
-    return res.send("Error authenticating user!!!");
+    return res.send({ error: "Error authenticating user!!!" });
   } else next();
 }

@@ -16,12 +16,12 @@ import {
 } from "@ionic/react";
 import { add, heart, heartOutline } from "ionicons/icons";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Redirect, useParams } from "react-router-dom";
+
+import "./FoodPage.style.css";
 import UserReview from "../../../components/user/UserReview/UserReview";
 import { useAuth } from "../../../utils/AuthContext";
 import { useFood } from "../../../utils/FoodContext";
-
-import "./FoodPage.style.css";
 
 const backendUrl = "https://zomateen-backend.herokuapp.com/";
 
@@ -31,13 +31,27 @@ const FoodPage: React.FC = () => {
   const [checked, setChecked] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
 
-  const { currentUser } = useAuth();
+  const { currentUser, loggedIn } = useAuth();
   const {
     foodies,
     addToFavorites,
     deleteFromFavorites,
     getFavorites,
   } = useFood();
+
+  useEffect(() => {
+    if (foodies) {
+      setChecked(currentUser?.favorites.includes(parseInt(id))!);
+      const tempFood = foodies.find((food) => food.foodId === parseInt(id));
+
+      if (tempFood) setFood(tempFood);
+      else setError(true);
+    }
+  }, [currentUser, foodies, id]);
+
+  if (!loggedIn) {
+    return <Redirect to="/login" />;
+  }
 
   async function doStuff() {
     if (checked) {
@@ -50,16 +64,6 @@ const FoodPage: React.FC = () => {
       await getFavorites();
     }
   }
-
-  useEffect(() => {
-    if (foodies) {
-      setChecked(currentUser?.favorites.includes(parseInt(id))!);
-      const tempFood = foodies.find((food) => food.foodId === parseInt(id));
-
-      if (tempFood) setFood(tempFood);
-      else setError(true);
-    }
-  }, []);
 
   return (
     <IonPage>

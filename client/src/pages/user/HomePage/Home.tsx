@@ -17,6 +17,8 @@ import React, { useEffect, useState } from "react";
 import { useFood } from "../../../utils/FoodContext";
 import FoodItem from "../../../components/user/HomePage/FoodItem/FoodItem";
 import "./Home.css";
+import { useAuth } from "../../../utils/AuthContext";
+import { Redirect } from "react-router";
 
 const Home: React.FC = () => {
   const [segmentValue, setSegmentValue] = useState<string>("breakfast");
@@ -24,15 +26,26 @@ const Home: React.FC = () => {
     null
   );
   const { foodies, getFood, getFavorites } = useFood();
+  const { loggedIn } = useAuth();
+
+  useEffect(() => {
+    getStaticStuff();
+  }, []);
+
+  useEffect(() => {
+    if (foodies) {
+      filterFoodies();
+    }
+  }, [foodies, segmentValue]);
+
+  if (!loggedIn) {
+    return <Redirect to="/login" />;
+  }
 
   async function getStaticStuff() {
     await getFood();
     await getFavorites();
   }
-
-  useEffect(() => {
-    getStaticStuff();
-  }, []);
 
   function filterFoodies() {
     const foods = foodies!;
@@ -43,10 +56,6 @@ const Home: React.FC = () => {
 
     if (tempFoodies) setFilteredFoodies(tempFoodies);
   }
-
-  useEffect(() => {
-    if (foodies) filterFoodies();
-  }, [foodies, segmentValue]);
 
   return (
     <IonPage>

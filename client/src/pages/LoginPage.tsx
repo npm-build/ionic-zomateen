@@ -1,7 +1,8 @@
-import React, { useRef, useState } from "react";
 import {
   IonButton,
+  IonCol,
   IonContent,
+  IonGrid,
   IonHeader,
   IonInput,
   IonItem,
@@ -9,12 +10,15 @@ import {
   IonList,
   IonLoading,
   IonPage,
+  IonRow,
+  IonSegment,
+  IonSegmentButton,
   IonText,
   IonTitle,
   IonToast,
-  IonToggle,
   IonToolbar,
 } from "@ionic/react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { useAuth } from "../utils/AuthContext";
 import { Redirect, useHistory } from "react-router";
@@ -23,33 +27,31 @@ function LoginPage() {
   const userNameRef = useRef<HTMLIonInputElement>(null);
   const passwordRef = useRef<HTMLIonInputElement>(null);
 
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [segmentValue, setSegmentValue] = useState<string>("user");
   const [error, setError] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
 
-  const { login, errorContext, loggedIn } = useAuth();
+  const { login, loading, errorContext, loggedIn, redirectUrl } = useAuth();
   const history = useHistory();
 
   if (loggedIn) {
-    return <Redirect to="/user/home" />;
+    console.log(redirectUrl);
+    return <Redirect to={redirectUrl} />;
   }
 
   async function handleLogin() {
-    setLoading(true);
     if (userNameRef.current !== null && passwordRef.current !== null) {
       await login(
         userNameRef.current.value as string,
-        passwordRef.current.value as string
+        passwordRef.current.value as string,
+        segmentValue
       )
         .then(() => {
-          if (errorContext) setError(true);
-          else
-            isAdmin ? history.push("/admin/home") : history.push("/user/home");
+          if (errorContext) return setError(true);
+          history.push(redirectUrl);
         })
         .catch((e) => {
           console.log(e);
           setError(true);
-          setLoading(false);
         });
     }
   }
@@ -62,38 +64,51 @@ function LoginPage() {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
-        <IonList>
-          <IonItem>
-            <IonText>User</IonText>
-            <IonToggle
-              checked={isAdmin}
-              onIonChange={(e) => setIsAdmin(e.detail.checked)}
-            />
-            <IonText>Admin</IonText>
-          </IonItem>
-          <IonItem>
-            <IonLabel position="floating">UserName</IonLabel>
-            <IonInput ref={userNameRef} type="text" />
-          </IonItem>
-          <IonItem>
-            <IonLabel position="floating">Password</IonLabel>
-            <IonInput ref={passwordRef} type="password" />
-          </IonItem>
-        </IonList>
-        <IonToast
-          isOpen={error}
-          onDidDismiss={() => setError(false)}
-          message="Error Logging in. Please try again later!!!"
-          duration={5000}
-          color="danger"
-        />
-        <IonButton expand="block" onClick={handleLogin}>
-          <IonText color="light">Login</IonText>
-        </IonButton>
-        <IonButton fill="clear" expand="block" routerLink="/signup">
-          <IonText>Don't have an account?</IonText>
-        </IonButton>
-        <IonLoading isOpen={loading}></IonLoading>
+        <IonGrid>
+          <IonRow>
+            <IonCol>
+              <IonSegment
+                value={segmentValue}
+                onIonChange={(e) => setSegmentValue(e.detail.value!)}
+              >
+                <IonSegmentButton value="user">
+                  <IonLabel>User</IonLabel>
+                </IonSegmentButton>
+                <IonSegmentButton value="admin">
+                  <IonLabel>Admin</IonLabel>
+                </IonSegmentButton>
+              </IonSegment>
+            </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol>
+              <IonList>
+                <IonItem>
+                  <IonLabel position="floating">UserName</IonLabel>
+                  <IonInput ref={userNameRef} type="text" />
+                </IonItem>
+                <IonItem>
+                  <IonLabel position="floating">Password</IonLabel>
+                  <IonInput ref={passwordRef} type="password" />
+                </IonItem>
+              </IonList>
+              <IonToast
+                isOpen={error}
+                onDidDismiss={() => setError(false)}
+                message="Error Logging in. Please try again later!!!"
+                duration={5000}
+                color="danger"
+              />
+              <IonButton expand="block" onClick={() => handleLogin()}>
+                <IonText color="light">Login</IonText>
+              </IonButton>
+              <IonButton fill="clear" expand="block" routerLink="/signup">
+                <IonText>Don't have an account?</IonText>
+              </IonButton>
+              <IonLoading isOpen={loading}></IonLoading>
+            </IonCol>
+          </IonRow>
+        </IonGrid>
       </IonContent>
     </IonPage>
   );

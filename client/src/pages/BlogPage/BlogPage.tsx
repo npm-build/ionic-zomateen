@@ -12,8 +12,10 @@ import {
 } from "@ionic/react";
 import React, { useEffect, useState } from "react";
 
-import backImg from "../../assets/back.png";
 import "./BlogPage.style.css";
+import backImg from "../../assets/back.png";
+import { useAuth } from "../../utils/AuthContext";
+import { Redirect } from "react-router";
 
 const BlogPage: React.FC = () => {
   const slideOptions = {
@@ -21,11 +23,18 @@ const BlogPage: React.FC = () => {
     speed: 350,
   };
 
+  const { loggedIn, redirectUrl } = useAuth();
+
   const [slide, setSlide] = useState<boolean>(false);
 
   useEffect(() => {
     setSlide(true);
   }, []);
+
+  if (loggedIn) {
+    console.log(redirectUrl);
+    return <Redirect to={redirectUrl} />;
+  }
 
   return (
     <IonPage>
@@ -49,7 +58,7 @@ const BlogPage: React.FC = () => {
                   onDidDismiss={() => setSlide(false)}
                   message="Swipe right ->"
                   duration={5000}
-                  color="warning"
+                  color="light"
                 />
               </IonText>
               <img src={backImg} alt="img" />
@@ -74,16 +83,6 @@ const BlogPage: React.FC = () => {
                   <IonText color="tertiary">SignUp</IonText>
                 </IonButton>
               </div>
-            </div>
-          </IonSlide>
-          <IonSlide>
-            <div className="slide">
-              <IonText color="light">
-                <h2>Ready to Play?</h2>
-              </IonText>
-              <IonButton color="light">
-                <IonText color="tertiary">Continue</IonText>
-              </IonButton>
             </div>
           </IonSlide>
         </IonSlides>

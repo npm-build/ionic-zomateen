@@ -2,16 +2,16 @@ import express, { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { db } from "../DB/db";
-import {
-  refreshTokenModel,
-  RefreshTokenType,
-} from "../DB/models/refreshTokens";
 import { authenticateToken } from "../utils/token";
 import { userModel, UserType } from "../DB/models/user";
 import { generateAccessTokenUser } from "../utils/token";
 import { FoodModel, FoodType } from "../DB/models/foodItem";
-export const UserRouter = express.Router();
+import {
+  refreshTokenModel,
+  RefreshTokenType,
+} from "../DB/models/refreshTokens";
 
+export const UserRouter = express.Router();
 const REFRESH_TOKEN_SECRET =
   "aa1e207051c835692d4fb6c9f3073bb5e32e747c12baa3bc0a208c0c6383730466dc626e35fb0a0d64aa1aba5cd8b11e69c4e15df02e40caef7a930854b76e32";
 
@@ -33,14 +33,10 @@ UserRouter.get(
   "/api/user/getuser",
   authenticateToken,
   async (req: any, res: Response) => {
+    const token = req.headers.authorization!.split(" ")[1];
     const user: UserType = req.user;
 
-    await userModel
-      .findOne({ userName: user.userName })
-      .then((dbUser: UserType) => res.send(dbUser))
-      .catch((e: Error) =>
-        res.status(404).send({ error: e, message: "User not found!!!" })
-      );
+    res.send({ user, token });
   }
 );
 
@@ -84,7 +80,7 @@ UserRouter.post("/api/user/login", async (req: Request, res: Response) => {
 
             return res.send({
               accessToken: access_token,
-              refreshToken: refresh_token,
+              refreshToken: refresh_token.token,
             });
           } else
             return res.status(400).send({
@@ -99,9 +95,19 @@ UserRouter.post("/api/user/login", async (req: Request, res: Response) => {
     );
 });
 
-UserRouter.delete("/api/user/logout", async (req: Request, res: Response) => {
-  return res.send("Logged out");
-});
+UserRouter.delete(
+  "/api/user/logout",
+  authenticateToken,
+  async (req: any, res: Response) => {
+    const user = req.user;
+    const token = req.headers.authorization!.split(" ")[1];
+
+    await refreshTokenModel
+      .findOneAndDelete({ usn: user.usn })
+      .then(() => res.send({ error: "Logged out", token }))
+      .catch((e: Error) => res.send({ error: e, token }));
+  }
+);
 
 UserRouter.post("/api/user/signup", async (req: Request, res: Response) => {
   const { firstName, lastName, phone, userName, usn, password } = req.body;
@@ -148,6 +154,7 @@ UserRouter.patch(
   "/api/user/addtofavorites",
   authenticateToken,
   async (req: Request, res: Response) => {
+    const token = req.headers.authorization!.split(" ")[1];
     const { usn, foodId } = req.body;
 
     try {
@@ -158,7 +165,10 @@ UserRouter.patch(
         .send({ error: "failed Item added to favorites successfully" });
     }
 
-    return res.send({ message: "Food Item added to favorites successfully" });
+    return res.send({
+      message: "Food Item added to favorites successfully",
+      token,
+    });
   }
 );
 
@@ -166,6 +176,7 @@ UserRouter.get(
   "/api/user/getfavorites",
   authenticateToken,
   async (req: any, res: Response) => {
+    const token = req.headers.authorization!.split(" ")[1];
     const { usn } = req.user;
 
     const user = await userModel.findOne({ usn });
@@ -186,8 +197,9 @@ UserRouter.get(
       return res.send({
         message: "Found your favorites",
         favorites: favFoodItems,
+        token,
       });
-    } else return res.send({ message: "User not found" });
+    } else return res.send({ message: "User not found", token });
   }
 );
 
@@ -195,17 +207,23 @@ UserRouter.patch(
   "/api/user/deletefromfavorites",
   authenticateToken,
   async (req: Request, res: Response) => {
+    const token = req.headers.authorization!.split(" ")[1];
     const { usn, foodId } = req.body;
 
     await userModel
       .updateOne({ usn }, { $pullAll: { favorites: [foodId] } })
       .catch((e: Error) =>
-        res
-          .status(400)
-          .send({ error: e, message: "Error removing from favorites!!!" })
+        res.status(400).send({
+          error: e,
+          message: "Error removing from favorites!!!",
+          token,
+        })
       );
 
-    return res.send({ msg: "Food removed from favorites successfully!!!" });
+    return res.send({
+      msg: "Food removed from favorites successfully!!!",
+      token,
+    });
   }
 );
 
@@ -230,26 +248,3 @@ UserRouter.patch(
     );
   }
 );
-
-UserRouter.post("/api/user/token", async (req, res) => {
-  const refresh_token = req.body.token;
-  if (refresh_token === null) return res.sendStatus(401);
-
-  await refreshTokenModel.findOne(
-    { refresh_token },
-    (err: Error, token: string) => {
-      if (err) return res.sendStatus(403);
-      if (refresh_token === token) {
-        jwt.verify(
-          refresh_token,
-          REFRESH_TOKEN_SECRET,
-          (err: any, currentUser: any) => {
-            if (err) return res.sendStatus(403);
-            const access_token = generateAccessTokenUser(currentUser);
-            return res.json({ accessToken: access_token });
-          }
-        );
-      }
-    }
-  );
-});
