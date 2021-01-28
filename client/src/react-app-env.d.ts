@@ -26,7 +26,7 @@ interface FoodType {
 
 interface OrderType {
   foodIds: number[];
-  customerNames: string;
+  customerName: string;
   orderId: number;
   messages: string;
   status: string;

@@ -55,7 +55,6 @@ const Home: React.FC = () => {
                 value={segmentValue}
                 onIonChange={(e) => setSegmentValue(e.detail.value!)}
               >
-                {console.log(orders)}
                 <IonSegmentButton value="pending">
                   <IonLabel>Pending Requests</IonLabel>
                 </IonSegmentButton>
@@ -75,27 +74,16 @@ const Home: React.FC = () => {
                   orders?.map((order) => (
                     <IonItem
                       button
-                      routerLink={`/user/order/${order.orderId}`}
+                      routerLink={`/admin/order/${order.orderId}`}
                       key={order.orderId}
                     >
                       <IonThumbnail slot="start">
                         <IonText color="medium">{order.orderId}</IonText>
                       </IonThumbnail>
                       <IonLabel>
-                        <h2 style={{ fontSize: "24px", fontWeight: 500 }}>
-                          {order.customerNames}
+                        <h2 style={{ fontSize: "20px", fontWeight: 400 }}>
+                          Customer Name : {order.customerName}
                         </h2>
-                        <h3 style={{ fontSize: "15px" }}>
-                          <IonText color="medium">
-                            Date: {order.dateOfOrder}
-                          </IonText>
-                          <IonText color="medium">
-                            Status: {order.status}
-                          </IonText>
-                          <IonText color="medium">
-                            Completed: {order.isCompleted}
-                          </IonText>
-                        </h3>
                       </IonLabel>
                     </IonItem>
                   ))

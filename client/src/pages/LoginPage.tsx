@@ -18,7 +18,7 @@ import {
   IonToast,
   IonToolbar,
 } from "@ionic/react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 
 import { useAuth } from "../utils/AuthContext";
 import { Redirect, useHistory } from "react-router";
@@ -34,7 +34,6 @@ function LoginPage() {
   const history = useHistory();
 
   if (loggedIn) {
-    console.log(redirectUrl);
     return <Redirect to={redirectUrl} />;
   }
 
@@ -47,7 +46,9 @@ function LoginPage() {
       )
         .then(() => {
           if (errorContext) return setError(true);
-          history.push(redirectUrl);
+          segmentValue === "admin"
+            ? history.push("/admin/orders")
+            : history.push("/user/home");
         })
         .catch((e) => {
           console.log(e);

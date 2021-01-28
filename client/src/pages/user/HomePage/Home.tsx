@@ -15,7 +15,7 @@ import {
 import React, { useEffect, useState } from "react";
 
 import { useFood } from "../../../utils/FoodContext";
-import FoodItem from "../../../components/user/HomePage/FoodItem/FoodItem";
+import FoodItem from "../../../components/user/FoodItem/FoodItem";
 import "./Home.css";
 import { useAuth } from "../../../utils/AuthContext";
 import { Redirect } from "react-router";

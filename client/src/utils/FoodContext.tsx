@@ -4,8 +4,8 @@ import axios from "axios";
 import { useAuth } from "./AuthContext";
 import Cookies from "js-cookie";
 
-const backendUrl = "http://localhost:8000/";
-// const backendUrl = "https://zomateen-backend.herokuapp.com/";
+// const backendUrl = "http://localhost:8000/";
+const backendUrl = "https://zomateen-backend.herokuapp.com/";
 
 export const FoodContext = createContext<FoodContextType>({
   foodies: null,

@@ -14,6 +14,7 @@ import { Redirect, Route } from "react-router-dom";
 import { useAuth } from "../../utils/AuthContext";
 
 import OrdersPage from "../../pages/admin/OrdersPage/OrdersPage";
+import IndividualOrderPage from "../../pages/admin/IndividualOrderPage/IndividualOrderPage";
 import SettingsPage from "../../pages/SettingsPage";
 
 function AppTabs() {
@@ -36,9 +37,9 @@ function AppTabs() {
         {/* <Route exact path="/admin/entries/add">
         <AddEntryPage />
       </Route> */}
-        {/* <Route exact path="/admin/entries/view/:id">
-        <EntryPage />
-      </Route> */}
+        <Route exact path="/admin/order/:id">
+          <IndividualOrderPage />
+        </Route>
         <Route exact path="/admin/settings">
           <SettingsPage />
         </Route>

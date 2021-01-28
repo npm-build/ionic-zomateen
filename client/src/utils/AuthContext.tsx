@@ -2,8 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 
-const backendUrl = "http://localhost:8000/";
-// const backendUrl = "https://zomateen-backend.herokuapp.com/";
+// const backendUrl = "http://localhost:8000/";
+const backendUrl = "https://zomateen-backend.herokuapp.com/";
 
 export const AuthContext = createContext<AuthContextType>({
   loggedIn: false,
@@ -91,7 +91,6 @@ export const AuthContextProvider: React.FC = ({ children }) => {
       })
       .then((res) => {
         setLoading(false);
-        console.log(res);
         setUser(res.data.user);
         checkToken(res.data.token);
       })
