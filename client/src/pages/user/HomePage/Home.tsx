@@ -85,15 +85,17 @@ const Home: React.FC = () => {
             </IonCol>
           </IonRow>
           <IonRow className="horizontal-scroll-row">
-            {foodies ? (
-              filteredFoodies?.map((food) => (
-                <IonCol key={food.foodId}>
-                  <FoodItem food={food} />
-                </IonCol>
-              ))
-            ) : (
-              <IonLoading isOpen />
-            )}
+            <IonCol>
+              {foodies ? (
+                filteredFoodies?.map((food) => (
+                  <IonCol key={food.foodId}>
+                    <FoodItem food={food} />
+                  </IonCol>
+                ))
+              ) : (
+                <IonLoading isOpen />
+              )}
+            </IonCol>
           </IonRow>
         </IonGrid>
       </IonContent>

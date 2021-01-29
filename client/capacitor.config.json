@@ -2,7 +2,7 @@
   "appId": "com.npm_build.zomateen",
   "appName": "zomateen",
   "bundledWebRuntime": false,
-  "npmClient": "yarn",
+  "npmClient": "npm",
   "linuxAndroidStudioPath": "/home/jose/.local/share/JetBrains/Toolbox/apps/AndroidStudio/ch-0/201.6953283/bin/studio.sh",
   "webDir": "build",
   "plugins": {

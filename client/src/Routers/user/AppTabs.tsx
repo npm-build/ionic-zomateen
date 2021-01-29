@@ -11,6 +11,7 @@ import {
   home as homeIcon,
   heartOutline as heartIcon,
   settings as settingsIcon,
+  cart,
 } from "ionicons/icons";
 import React from "react";
 import { Redirect, Route } from "react-router-dom";
@@ -21,6 +22,7 @@ import FavoritesPage from "../../pages/user/Favorites/Favorites";
 import SettingsPage from "../../pages/SettingsPage";
 
 import { useAuth } from "../../utils/AuthContext";
+import CartPage from "../../pages/user/CartPage/CartPage";
 
 function AppTabs() {
   const { loggedIn, loading } = useAuth();
@@ -45,6 +47,9 @@ function AppTabs() {
         <Route exact path="/user/food/:id">
           <FoodPage />
         </Route>
+        <Route exact path="/user/cart">
+          <CartPage />
+        </Route>
         <Route exact path="/user/settings">
           <SettingsPage />
         </Route>
@@ -57,6 +62,10 @@ function AppTabs() {
         <IonTabButton tab="favorites" href="/user/favorites">
           <IonIcon icon={heartIcon} />
           <IonLabel>Favorites</IonLabel>
+        </IonTabButton>
+        <IonTabButton tab="cart" href="/user/cart">
+          <IonIcon icon={cart} />
+          <IonLabel>Cart</IonLabel>
         </IonTabButton>
         <IonTabButton tab="settings" href="/user/settings">
           <IonIcon icon={settingsIcon} />

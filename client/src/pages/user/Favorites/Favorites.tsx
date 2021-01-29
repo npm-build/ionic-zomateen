@@ -12,7 +12,7 @@ import {
   IonImg,
   IonText,
 } from "@ionic/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Redirect } from "react-router";
 
 import "./Favorites.style.css";
@@ -23,8 +23,16 @@ const backendUrl = "https://zomateen-backend.herokuapp.com/";
 
 function Favorites() {
   const [error, setError] = useState<boolean>(false);
-  const { favoriteFoodies } = useFood();
+  const { favoriteFoodies, getFavorites } = useFood();
   const { loggedIn } = useAuth();
+
+  async function getStuff() {
+    await getFavorites();
+  }
+
+  useEffect(() => {
+    getStuff();
+  }, []);
 
   if (!loggedIn) {
     return <Redirect to="/login" />;

@@ -67,20 +67,13 @@ interface AuthContextType {
 interface FoodContextType {
   loading: boolean;
   foodies: FoodType[] | null;
+  cartItems: FoodType[] | null;
   orders: OrderType[] | null;
   favoriteFoodies: FoodType[] | null;
   getFood: () => Promise<void>;
-  getFavorites: () => Promise<void>;
   getOrders: () => Promise<void>;
+  getFavorites: () => Promise<void>;
   addToFavorites: (foodId: number) => Promise<void>;
   deleteFromFavorites: (foodId: number) => Promise<void>;
-  // addFood?: (string, string) => Promise<void>;
-  // signUp?: ({
-  //   firstName: string,
-  //   lastName: string,
-  //   userName: string,
-  //   usn: string,
-  //   password: string,
-  //   phone: number,
-  // }) => Promise<void>;
+  addToCart: (foodId: number) => Promise<void>;
 }

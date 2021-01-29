@@ -16,7 +16,7 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import "./OrdersPage.styles.css";
 import { useFood } from "../../../utils/FoodContext";
@@ -26,15 +26,7 @@ import { Redirect } from "react-router";
 const Home: React.FC = () => {
   const [segmentValue, setSegmentValue] = useState<string>("pending");
   const { loggedIn } = useAuth();
-  const { orders, getOrders } = useFood();
-
-  async function getStuff() {
-    await getOrders();
-  }
-
-  useEffect(() => {
-    getStuff();
-  }, []);
+  const { orders } = useFood();
 
   if (!loggedIn) {
     return <Redirect to="/login" />;
@@ -73,25 +65,27 @@ const Home: React.FC = () => {
             <IonCol>
               <IonList>
                 {orders ? (
-                  orders?.map((order) => (
-                    <IonItem
-                      button
-                      routerLink={`/admin/order/${order.orderId}`}
-                      key={order.orderId}
-                    >
-                      <IonThumbnail
-                        className="ion-padding-vertical"
-                        slot="start"
+                  orders?.map((order) => {
+                    return order.status === segmentValue ? (
+                      <IonItem
+                        button
+                        routerLink={`/admin/order/${order.orderId}`}
+                        key={order.orderId}
                       >
-                        <IonText color="medium">{order.orderId}</IonText>
-                      </IonThumbnail>
-                      <IonLabel>
-                        <h2 style={{ fontSize: "20px", fontWeight: 400 }}>
-                          Customer Name : {order.customerName}
-                        </h2>
-                      </IonLabel>
-                    </IonItem>
-                  ))
+                        <IonThumbnail
+                          className="ion-padding-vertical"
+                          slot="start"
+                        >
+                          <IonText color="medium">{order.orderId}</IonText>
+                        </IonThumbnail>
+                        <IonLabel>
+                          <h2 style={{ fontSize: "20px", fontWeight: 400 }}>
+                            Customer Name : {order.customerName}
+                          </h2>
+                        </IonLabel>
+                      </IonItem>
+                    ) : null;
+                  })
                 ) : (
                   <IonLoading isOpen />
                 )}

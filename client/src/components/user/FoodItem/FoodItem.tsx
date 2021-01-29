@@ -1,13 +1,10 @@
 import {
-  IonButton,
   IonCard,
   IonCardContent,
   IonCardHeader,
-  IonIcon,
   IonImg,
   IonText,
 } from "@ionic/react";
-import { add } from "ionicons/icons";
 import React from "react";
 
 import "./FoodItem.styles.css";
@@ -40,10 +37,6 @@ const FoodItem: React.FC<{ food: FoodType }> = ({ food }) => {
           <IonText color="medium">Rs {food.price}</IonText>
           <IonText>4 Star</IonText>
         </div>
-        <IonButton>
-          <IonIcon slot="start" color="light" icon={add} />
-          <IonText color="light">Add To Cart</IonText>
-        </IonButton>
       </IonCardContent>
     </IonCard>
   );

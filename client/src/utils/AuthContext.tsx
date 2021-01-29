@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import Cookies from "js-cookie";
 import axios from "axios";
 
 const backendUrl = "http://localhost:8000/";
@@ -22,12 +21,19 @@ export function useAuth(): AuthContextType {
   return useContext(AuthContext);
 }
 
-const isAdmin = Cookies.get("isAdmin");
+const isAdmin = localStorage.getItem("isAdmin");
 
+export function checkToken(token: string) {
+  const accessToken = localStorage.getItem("accessToken");
+
+  if (accessToken === token) {
+    localStorage.removeItem("accessToken");
+    localStorage.setItem("accessToken", token);
+  }
+}
 export const AuthContextProvider: React.FC = ({ children }) => {
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [redirectUrl, setRedirectUrl] = useState<string>(() => {
-    const isAdmin = Cookies.get("isAdmin");
     return isAdmin === "true" ? "/admin/orders" : "/user/home";
   });
   const [errorContext, setErrorContext] = useState<string | null>(null);
@@ -39,17 +45,18 @@ export const AuthContextProvider: React.FC = ({ children }) => {
   } | null>(null);
 
   useEffect(() => {
+    setLoading(true);
     if (isAdmin === "true") {
       setRedirectUrl("/admin/orders");
     }
 
     if (
-      Cookies.get("accessToken") !== undefined &&
-      Cookies.get("refreshToken") !== undefined
+      localStorage.getItem("accessToken") !== null &&
+      localStorage.getItem("refreshToken") !== null
     ) {
       const cookie = {
-        accessToken: Cookies.get("accessToken") as string,
-        refreshToken: Cookies.get("refreshToken") as string,
+        accessToken: localStorage.getItem("accessToken") as string,
+        refreshToken: localStorage.getItem("refreshToken") as string,
       };
 
       if (cookie) {
@@ -57,25 +64,13 @@ export const AuthContextProvider: React.FC = ({ children }) => {
         setLoggedIn(true);
       }
     }
+
+    setLoading(false);
   }, []);
 
   useEffect(() => {
     if (cookies?.accessToken) updateUser();
   }, [cookies]);
-
-  function checkToken(token: string) {
-    const accessToken = Cookies.get("accessToken");
-
-    if (accessToken === token) {
-      Cookies.remove("accessToken");
-      Cookies.set("accessToken", token, {
-        secure: true,
-        path: "/",
-        expires: 1,
-        sameSite: "Strict",
-      });
-    }
-  }
 
   async function updateUser() {
     const apiRoute =
@@ -126,39 +121,18 @@ export const AuthContextProvider: React.FC = ({ children }) => {
         const at = res.data.accessToken.toString();
         const rt = res.data.refreshToken.toString();
 
-        Cookies.remove("isAdmin");
-        Cookies.remove("accessToken");
-        Cookies.remove("refreshToken");
+        localStorage.removeItem("isAdmin");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
 
         setCookies({ accessToken: at, refreshToken: rt });
 
-        Cookies.set("accessToken", at, {
-          secure: true,
-          path: "/",
-          expires: 1,
-          sameSite: "Strict",
-        });
-
-        Cookies.set("refreshToken", rt, {
-          secure: true,
-          path: "/",
-          expires: 365,
-          sameSite: "Strict",
-        });
+        localStorage.setItem("accessToken", at);
+        localStorage.setItem("refreshToken", rt);
 
         userType === "admin"
-          ? Cookies.set("isAdmin", "true", {
-              secure: true,
-              path: "/",
-              expires: 365,
-              sameSite: "Strict",
-            })
-          : Cookies.set("isAdmin", "false", {
-              secure: true,
-              path: "/",
-              expires: 365,
-              sameSite: "Strict",
-            });
+          ? localStorage.setItem("isAdmin", "true")
+          : localStorage.setItem("isAdmin", "false");
 
         setLoading(false);
       })
@@ -181,9 +155,9 @@ export const AuthContextProvider: React.FC = ({ children }) => {
         },
       })
       .then(() => {
-        Cookies.remove("accessToken");
-        Cookies.remove("refreshToken");
-        Cookies.remove("isAdmin");
+        localStorage.removeItem("isAdmin");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
         setLoggedIn(false);
       })
       .catch((e) => console.log(e));
@@ -201,23 +175,22 @@ export const AuthContextProvider: React.FC = ({ children }) => {
     userType: string
   ) {
     setLoading(true);
-    let apiUrl = "api/user/signup";
-    const realData = [];
+    let apiUrl = userType === "admin" ? "api/admin/signup" : "api/user/signup";
 
-    if (userType === "admin") {
-      apiUrl = "api/admin/signup";
-      realData.push({
-        firstName: data.firstName,
-        lastName: data.lastName,
-        userName: data.userName,
-        collegeId: data.usn,
-        password: data.password,
-        phone: data.phone,
-      });
-    }
+    const realData =
+      userType === "admin"
+        ? {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            userName: data.userName,
+            collegeId: data.usn,
+            password: data.password,
+            phone: data.phone,
+          }
+        : data;
 
     await axios
-      .post(`${backendUrl}${apiUrl}`, realData[0], {
+      .post(`${backendUrl}${apiUrl}`, realData, {
         headers: {
           "Content-Type": "application/json",
         },

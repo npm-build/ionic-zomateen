@@ -29,6 +29,7 @@ const FoodPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [food, setFood] = useState<FoodType | null>(null);
   const [checked, setChecked] = useState<boolean>(false);
+  const [success, setSuccess] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
 
   const { currentUser, loggedIn } = useAuth();
@@ -37,7 +38,16 @@ const FoodPage: React.FC = () => {
     addToFavorites,
     deleteFromFavorites,
     getFavorites,
+    addToCart,
   } = useFood();
+
+  async function getStuff() {
+    await getFavorites()
+  }
+
+  useEffect(() => {
+    getStuff()
+  }, [])
 
   useEffect(() => {
     if (foodies) {
@@ -51,6 +61,10 @@ const FoodPage: React.FC = () => {
 
   if (!loggedIn) {
     return <Redirect to="/login" />;
+  }
+
+  async function handleAddToCart() {
+    await addToCart(parseInt(id)).then(() => setSuccess(true));
   }
 
   async function doStuff() {
@@ -80,8 +94,15 @@ const FoodPage: React.FC = () => {
           isOpen={error}
           onDidDismiss={() => setError(false)}
           message="Food item not found!!!"
-          duration={5000}
+          duration={4000}
           color="danger"
+        />
+        <IonToast
+          isOpen={success}
+          onDidDismiss={() => setSuccess(false)}
+          message="Food Item added to Cart!!!"
+          duration={3000}
+          color="success"
         />
         <IonGrid>
           <IonRow>
@@ -102,7 +123,7 @@ const FoodPage: React.FC = () => {
               <h2>{food?.name}</h2>
               <div className="flex">
                 <h3>Rs. {food?.price}</h3>
-                <IonButton>
+                <IonButton onClick={handleAddToCart}>
                   <IonIcon slot="start" color="light" icon={add} />
                   <IonText color="light">Add To Cart</IonText>
                 </IonButton>
