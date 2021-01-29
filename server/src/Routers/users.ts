@@ -151,6 +151,30 @@ UserRouter.post("/api/user/signup", async (req: Request, res: Response) => {
 });
 
 UserRouter.patch(
+  "/api/user/forgotpassword",
+  async (req: Request, res: Response) => {
+    const userName = req.body.userName;
+    const usn = req.body.usn;
+    const password = req.body.password;
+
+    await userModel.updateOne(
+      { userName, usn },
+      { password },
+      { runValidators: true },
+      (err, resp) => {
+        if (err) {
+          return res.send({ error: "Error updating password!!!" });
+        } else {
+          return res.send({ msg: "Password Update successfully" });
+        }
+      }
+    );
+  }
+);
+
+// Favorites
+
+UserRouter.patch(
   "/api/user/addtofavorites",
   authenticateToken,
   async (req: Request, res: Response) => {
@@ -206,12 +230,19 @@ UserRouter.get(
 UserRouter.patch(
   "/api/user/deletefromfavorites",
   authenticateToken,
-  async (req: Request, res: Response) => {
+  async (req: any, res: Response) => {
     const token = req.headers.authorization!.split(" ")[1];
-    const { usn, foodId } = req.body;
+    const usn = req.user.usn;
+    const { foodId } = req.body;
 
     await userModel
-      .updateOne({ usn }, { $pullAll: { favorites: [foodId] } })
+      .updateOne({ usn }, { $pullAll: { favorites: foodId } })
+      .then(() => {
+        res.send({
+          msg: "Food removed from favorites successfully!!!",
+          token,
+        });
+      })
       .catch((e: Error) =>
         res.status(400).send({
           error: e,
@@ -219,32 +250,87 @@ UserRouter.patch(
           token,
         })
       );
+  }
+);
 
-    return res.send({
-      msg: "Food removed from favorites successfully!!!",
-      token,
-    });
+// Cart Items
+
+UserRouter.post(
+  "/api/user/cart/add",
+  authenticateToken,
+  async (req: any, res: Response) => {
+    const token = req.headers.authorization!.split(" ")[1];
+    const foodId: number = req.body.foodId;
+    const { usn } = req.user;
+
+    if (!foodId)
+      return res
+        .status(401)
+        .send({ error: "Error adding food item to cart", token });
+
+    try {
+      await userModel
+        .updateOne({ usn }, { $addToSet: { cartItems: foodId } })
+        .then(() => {
+          return res.send({
+            message: "Food Item Added to cart successfully",
+            token,
+          });
+        });
+    } catch (e) {
+      console.log(e);
+      return res
+        .status(401)
+        .send({ error: "Error adding food item to cart", token });
+    }
+  }
+);
+
+UserRouter.get(
+  "/api/user/cart",
+  authenticateToken,
+  async (req: any, res: Response) => {
+    const token = req.headers.authorization!.split(" ")[1];
+    const user = req.user;
+    const foodIds: number[] = await userModel.find({ usn: user.usn }).cartItems;
+    const realFoodies = await FoodModel.find({});
+
+    const cartFoodies: FoodType[] = [];
+
+    for (const food of realFoodies) {
+      foodIds?.some((fdId: number) => {
+        if (food.foodId === fdId) {
+          cartFoodies.push(food);
+        }
+      });
+    }
+
+    return res.send({ cartItems: cartFoodies, token });
   }
 );
 
 UserRouter.patch(
-  "/api/user/forgotpassword",
-  async (req: Request, res: Response) => {
-    const userName = req.body.userName;
-    const usn = req.body.usn;
-    const password = req.body.password;
+  "/api/user/cart/delete",
+  authenticateToken,
+  async (req: any, res: Response) => {
+    const token = req.headers.authorization!.split(" ")[1];
+    const user = req.user;
+    const foodId = req.body.foodId;
 
-    await userModel.updateOne(
-      { userName, usn },
-      { password },
-      { runValidators: true },
-      (err, resp) => {
-        if (err) {
-          return res.send({ error: "Error updating password!!!" });
-        } else {
-          return res.send({ msg: "Password Update successfully" });
-        }
-      }
-    );
+    await userModel
+      .updateOne({ usn: user.usn }, { $pullAll: { cartItems: foodId } })
+      .then(() => {
+        res.send({
+          message: "Food Item successfully deleted from cart",
+          token,
+        });
+      })
+      .catch((e: Error) =>
+        res.status(400).send({
+          error: e,
+          message: "Error deleting food item from cart",
+          token,
+        })
+      );
   }
 );

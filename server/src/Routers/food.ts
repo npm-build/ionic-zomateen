@@ -4,7 +4,6 @@ import { UploadedFile } from "express-fileupload";
 import { db } from "../DB/db";
 import { authenticateToken } from "../utils/token";
 import { FoodModel, FoodType } from "../DB/models/foodItem";
-import { CartModel, CartType } from "../DB/models/cart";
 
 export const FoodRouter = express.Router();
 
@@ -33,77 +32,6 @@ FoodRouter.get("/api/food/dropDB", async (req: Request, res: Response) => {
   await db.dropDatabase();
   res.send({ msg: "Db dropped" });
 });
-
-FoodRouter.post(
-  "/api/food/addtocart",
-  authenticateToken,
-  async (req: Request, res: Response) => {
-    const token = req.headers.authorization!.split(" ")[1];
-    const foodId: number = req.body.foodId;
-
-    const foodItem: CartType = new CartModel({
-      foodId,
-    });
-
-    await foodItem
-      .save()
-      .then(() => {
-        return res.send({
-          message: "Food Item Added to cart successfully",
-          token,
-        });
-      })
-      .catch((e: Error) => {
-        return res
-          .status(401)
-          .send({ error: "Error adding food item to cart", token });
-      });
-  }
-);
-
-FoodRouter.get(
-  "/api/food/cartitems",
-  authenticateToken,
-  async (req: Request, res: Response) => {
-    const token = req.headers.authorization!.split(" ")[1];
-    const foodies = await CartModel.find({});
-    const realFoodies = await FoodModel.find({});
-
-    const cartFoodies: FoodType[] = [];
-
-    for (const food of realFoodies) {
-      foodies?.some((fd: CartType) => {
-        if (food.foodId === fd.foodId) {
-          cartFoodies.push(food);
-        }
-      });
-    }
-
-    return res.send({ cartFoodies, token });
-  }
-);
-
-FoodRouter.delete(
-  "/api/food/cartitems",
-  authenticateToken,
-  async (req: Request, res: Response) => {
-    const token = req.headers.authorization!.split(" ")[1];
-    const foodId = req.body.foodId;
-
-    await CartModel.deleteOne({ foodId })
-      .then(() => {
-        return res.send({
-          message: "Food Item successfully deleted from cart",
-          token,
-        });
-      })
-      .catch((e: Error) => {
-        return res
-          .status(401)
-          .send({ error: "Error deleting food item from cart", token });
-      });
-  }
-);
 
 FoodRouter.post(
   "/api/food/add",

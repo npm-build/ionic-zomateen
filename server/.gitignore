@@ -2,6 +2,7 @@
 node_modules
 yarn.lock
 package-lock.json
+.yarn
 
 # production
 tmp
@@ -9,3 +10,4 @@ dist
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.pnp.js
