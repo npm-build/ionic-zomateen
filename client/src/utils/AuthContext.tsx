@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 
-const backendUrl = "http://localhost:8000/";
-// const backendUrl = "https://zomateen-backend.herokuapp.com/";
+// const backendUrl = "http://localhost:8000/";
+const backendUrl = "https://zomateen-backend.herokuapp.com/";
 
 export const AuthContext = createContext<AuthContextType>({
   loggedIn: false,

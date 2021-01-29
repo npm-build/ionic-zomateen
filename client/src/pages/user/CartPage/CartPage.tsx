@@ -5,12 +5,13 @@ import {
   IonItem,
   IonLabel,
   IonList,
+  IonLoading,
   IonPage,
   IonThumbnail,
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
-import React from "react";
+import React, { useEffect } from "react";
 
 import "./CartPage.style.scss";
 import { useFood } from "../../../utils/FoodContext";
@@ -18,7 +19,15 @@ import { useFood } from "../../../utils/FoodContext";
 const backendUrl = "https://zomateen-backend.herokuapp.com/";
 
 function CartPage() {
-  const { cartItems } = useFood();
+  const { cartItems, getCartItems } = useFood();
+
+  async function getStuff() {
+    await getCartItems();
+  }
+
+  useEffect(() => {
+    getStuff();
+  }, []);
 
   return (
     <IonPage>
@@ -34,7 +43,7 @@ function CartPage() {
             <IonLabel style={{ fontSize: "18px" }}>Item Name</IonLabel>
             <IonThumbnail slot="end"></IonThumbnail>
           </IonItem>
-          {cartItems &&
+          {cartItems ? (
             cartItems?.map((food) => (
               <IonItem key={food.foodId}>
                 <IonThumbnail slot="end">
@@ -43,7 +52,10 @@ function CartPage() {
                 <IonLabel>Id : {food.foodId}</IonLabel>
                 <IonLabel>{food.name}</IonLabel>
               </IonItem>
-            ))}
+            ))
+          ) : (
+            <IonLoading isOpen={true} />
+          )}
         </IonList>
       </IonContent>
     </IonPage>

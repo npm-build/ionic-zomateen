@@ -3,8 +3,8 @@ import axios from "axios";
 
 import { useAuth, checkToken } from "./AuthContext";
 
-const backendUrl = "http://localhost:8000/";
-// const backendUrl = "https://zomateen-backend.herokuapp.com/";
+// const backendUrl = "http://localhost:8000/";
+const backendUrl = "https://zomateen-backend.herokuapp.com/";
 
 export const FoodContext = createContext<FoodContextType>({
   loading: false,
@@ -14,6 +14,7 @@ export const FoodContext = createContext<FoodContextType>({
   orders: null,
   getFood: async () => {},
   getFavorites: async () => {},
+  getCartItems: async () => {},
   getOrders: async () => {},
   addToFavorites: async () => {},
   deleteFromFavorites: async () => {},
@@ -33,14 +34,6 @@ export const FoodContextProvider: React.FC = ({ children }) => {
     null
   );
   const [foodItems, setFoodItems] = useState<FoodType[] | null>(null);
-
-  async function getStuff() {
-    await getCartItems();
-  }
-
-  useEffect(() => {
-    getStuff();
-  });
 
   async function getFood() {
     setLoading(true);
@@ -205,6 +198,7 @@ export const FoodContextProvider: React.FC = ({ children }) => {
     addToFavorites,
     deleteFromFavorites,
     addToCart,
+    getCartItems,
   };
 
   return (

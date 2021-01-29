@@ -292,16 +292,15 @@ UserRouter.get(
   async (req: any, res: Response) => {
     const token = req.headers.authorization!.split(" ")[1];
     const user = req.user;
-    const foodIds: number[] = await userModel.find({ usn: user.usn }).cartItems;
+    const DBuser: UserType | null = await userModel.findOne({ usn: user.usn });
     const realFoodies = await FoodModel.find({});
+    const foodIds = DBuser!.cartItems;
 
     const cartFoodies: FoodType[] = [];
 
     for (const food of realFoodies) {
       foodIds?.some((fdId: number) => {
-        if (food.foodId === fdId) {
-          cartFoodies.push(food);
-        }
+        if (food.foodId === fdId) cartFoodies.push(food);
       });
     }
 
