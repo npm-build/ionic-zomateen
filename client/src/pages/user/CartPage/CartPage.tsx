@@ -81,9 +81,7 @@ function CartPage() {
             </IonCol>
             <IonCol>
               <IonItem>
-                <IonLabel position="floating">
-                  Any Message you want to convey to the chef?
-                </IonLabel>
+                <IonLabel position="floating">Any Messages?</IonLabel>
                 <IonInput ref={messageRef} />
               </IonItem>
             </IonCol>
@@ -106,18 +104,12 @@ function CartPage() {
                     },
                   ]}
                 />
-                <IonItem>
-                  <IonLabel style={{ fontSize: "18px" }}>FOOD ID</IonLabel>
-                  <IonLabel style={{ fontSize: "18px" }}>FOOD NAME</IonLabel>
-                  <IonLabel style={{ fontSize: "18px" }}>PRICE</IonLabel>
-                  <IonThumbnail></IonThumbnail>
-                </IonItem>
+                {cartItems ? null : (
+                  <IonText>Your favorites will appear here</IonText>
+                )}
                 {cartItems ? (
                   cartItems?.map((food) => (
                     <IonItem key={food.foodId}>
-                      <IonLabel color="medium">
-                        &nbsp;&nbsp;{food.foodId}
-                      </IonLabel>
                       <IonLabel color="medium">{food.name}</IonLabel>
                       <IonLabel color="medium">Rs {food.price}</IonLabel>
                       <IonThumbnail>

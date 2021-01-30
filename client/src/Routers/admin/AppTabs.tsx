@@ -7,20 +7,19 @@ import {
   IonTabButton,
   IonTabs,
 } from "@ionic/react";
-import React from "react";
 import {
   add,
   home as homeIcon,
   settings as settingsIcon,
 } from "ionicons/icons";
+import React from "react";
 import { Redirect, Route } from "react-router-dom";
-
-import { useAuth } from "../../utils/AuthContext";
 
 import OrdersPage from "../../pages/admin/OrdersPage/OrdersPage";
 import AddFoodPage from "../../pages/admin/AddFoodPage/AddFoodPage";
 import IndividualOrderPage from "../../pages/admin/IndividualOrderPage/IndividualOrderPage";
 import SettingsPage from "../../pages/SettingsPage";
+import { useAuth } from "../../utils/AuthContext";
 
 function AppTabs() {
   const { loggedIn, loading } = useAuth();

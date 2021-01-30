@@ -21,7 +21,6 @@ import {
 import { CameraResultType, CameraSource, Plugins } from "@capacitor/core";
 import * as yup from "yup";
 import axios from "axios";
-import Cookies from "js-cookie";
 import React, { ChangeEvent, useRef, useState } from "react";
 import { Formik, Field, Form, FieldArray } from "formik";
 import { closeOutline } from "ionicons/icons";
@@ -29,6 +28,7 @@ import { closeOutline } from "ionicons/icons";
 import "./AddFoodPage.style.scss";
 import img from "../../../assets/placeholder.png";
 import { useFood } from "../../../utils/FoodContext";
+import { useAuth } from "../../../utils/AuthContext";
 
 function AddFoodPage() {
   const imgRef = useRef<HTMLInputElement>(null);
@@ -36,6 +36,7 @@ function AddFoodPage() {
   const [imgUrl, setImgUrl] = useState<string>(img);
   const [file, setFile] = useState<Blob>();
 
+  const { cookies } = useAuth();
   const { loading } = useFood();
 
   const { Camera } = Plugins;
@@ -110,7 +111,7 @@ function AddFoodPage() {
               return console.warn("Upload Image");
             }
 
-            const accessToken = Cookies.get("accessToken");
+            const accessToken = cookies!.accessToken;
 
             const formData = new FormData();
             formData.append("filePath", file!);

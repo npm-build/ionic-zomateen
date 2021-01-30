@@ -11,6 +11,7 @@ import {
   IonThumbnail,
   IonImg,
   IonText,
+  IonLoading,
 } from "@ionic/react";
 import React, { useEffect, useState } from "react";
 import { Redirect } from "react-router";
@@ -62,25 +63,32 @@ function Favorites() {
           ]}
         />
         <IonList>
-          {favoriteFoodies?.map((food) => (
-            <IonItem
-              button
-              routerLink={`/user/food/${food.foodId}`}
-              key={food.foodId}
-            >
-              <IonThumbnail slot="end">
-                <IonImg src={`${backendUrl}${food.filePath}`} />
-              </IonThumbnail>
-              <IonLabel>
-                <h2 style={{ fontSize: "24px", fontWeight: 500 }}>
-                  {food.name}
-                </h2>
-                <h3 style={{ fontSize: "15px" }}>
-                  <IonText color="medium">Rs {food.price}</IonText>
-                </h3>
-              </IonLabel>
-            </IonItem>
-          ))}
+          {favoriteFoodies ? null : (
+            <IonText>Your favorites will appear here</IonText>
+          )}
+          {favoriteFoodies ? (
+            favoriteFoodies?.map((food) => (
+              <IonItem
+                button
+                routerLink={`/user/food/${food.foodId}`}
+                key={food.foodId}
+              >
+                <IonThumbnail slot="end">
+                  <IonImg src={`${backendUrl}${food.filePath}`} />
+                </IonThumbnail>
+                <IonLabel>
+                  <h2 style={{ fontSize: "24px", fontWeight: 500 }}>
+                    {food.name}
+                  </h2>
+                  <h3 style={{ fontSize: "15px" }}>
+                    <IonText color="medium">Rs {food.price}</IonText>
+                  </h3>
+                </IonLabel>
+              </IonItem>
+            ))
+          ) : (
+            <IonLoading isOpen={true} />
+          )}
         </IonList>
       </IonContent>
     </IonPage>

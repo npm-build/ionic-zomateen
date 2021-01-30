@@ -58,10 +58,10 @@ const Home: React.FC = () => {
                 onIonChange={(e) => setSegmentValue(e.detail.value!)}
               >
                 <IonSegmentButton value="pending">
-                  <IonLabel>Pending Requests</IonLabel>
+                  <IonLabel>Pending</IonLabel>
                 </IonSegmentButton>
                 <IonSegmentButton value="progress">
-                  <IonLabel>In Progress</IonLabel>
+                  <IonLabel>Progress</IonLabel>
                 </IonSegmentButton>
                 <IonSegmentButton value="ready">
                   <IonLabel>Ready</IonLabel>
@@ -76,9 +76,18 @@ const Home: React.FC = () => {
                   orders?.map((order) => {
                     return order.status === segmentValue ? (
                       <IonItem
+                        className="ion-margin"
+                        style={{ borderRadius: "10px" }}
                         button
                         routerLink={`/admin/order/${order.orderId}`}
                         key={order.orderId}
+                        color={
+                          segmentValue === "pending"
+                            ? "danger"
+                            : segmentValue === "progress"
+                            ? "yellow"
+                            : "success"
+                        }
                       >
                         <IonThumbnail
                           className="ion-padding-vertical"
