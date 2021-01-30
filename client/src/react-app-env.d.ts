@@ -73,6 +73,11 @@ interface FoodContextType {
   getFood: () => Promise<void>;
   getOrders: () => Promise<void>;
   addOrder: (messages: string) => Promise<void>;
+  updateOrder: (
+    orderId: number,
+    status: string,
+    isCompleted: boolean
+  ) => Promise<void>;
   getFavorites: () => Promise<void>;
   getCartItems: () => Promise<void>;
   addToFavorites: (foodId: number) => Promise<void>;

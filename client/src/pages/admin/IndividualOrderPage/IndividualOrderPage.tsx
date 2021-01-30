@@ -1,5 +1,6 @@
 import {
   IonBackButton,
+  IonButton,
   IonButtons,
   IonCol,
   IonContent,
@@ -24,12 +25,20 @@ import "./IndividualOrderPage.style.css";
 
 const backendUrl = "https://zomateen-backend.herokuapp.com/";
 
+function formateDate(isoString: string) {
+  return new Date(isoString).toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 const IndividualOrderPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [order, setOrder] = useState<OrderType | null>(null);
   const [error, setError] = useState<boolean>(false);
 
-  const { orders, foodies, getFood } = useFood();
+  const { orders, foodies, getFood, updateOrder } = useFood();
 
   async function getStuff() {
     await getFood();
@@ -42,12 +51,15 @@ const IndividualOrderPage: React.FC = () => {
     else setError(true);
   }, []);
 
-  function formateDate(isoString: string) {
-    return new Date(isoString).toLocaleDateString("en-US", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
+  async function handleClick() {
+    if (order?.status === "pending") {
+      await updateOrder(order.orderId, "progress", false);
+    } else if (order?.status === "progress") {
+      await updateOrder(order.orderId, "ready", true);
+    } else {
+      // await updateOrder(order!.orderId);
+      console.log("Will Notify Soon!!!");
+    }
   }
 
   return (
@@ -95,6 +107,24 @@ const IndividualOrderPage: React.FC = () => {
                 <p>Completed : {`${order?.isCompleted}`}</p>
                 <p>Message for the chef : {order?.messages}</p>
               </IonText>
+            </IonCol>
+            <IonCol>
+              <IonText style={{ fontSize: "20px", fontWeight: "500" }}>
+                <h3>
+                  {order?.status === "ready"
+                    ? "Notify Customer"
+                    : `Push to Next`}
+                </h3>
+              </IonText>
+              <IonButton onClick={handleClick}>
+                <IonText color="light">
+                  {order?.status === "ready" ? "Notify" : "Push"}
+                </IonText>
+              </IonButton>
+            </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol>
               <IonText color="primary">
                 <h2 style={{ marginBottom: "0" }}>Ordered Items</h2>
               </IonText>

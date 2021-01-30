@@ -3,8 +3,8 @@ import axios from "axios";
 
 import { useAuth, checkToken } from "./AuthContext";
 
-const backendUrl = "http://localhost:8000/";
-// const backendUrl = "https://zomateen-backend.herokuapp.com/";
+// const backendUrl = "http://localhost:8000/";
+const backendUrl = "https://zomateen-backend.herokuapp.com/";
 
 export const FoodContext = createContext<FoodContextType>({
   loading: false,
@@ -17,6 +17,7 @@ export const FoodContext = createContext<FoodContextType>({
   getCartItems: async () => {},
   getOrders: async () => {},
   addOrder: async () => {},
+  updateOrder: async () => {},
   addToFavorites: async () => {},
   deleteFromFavorites: async () => {},
   addToCart: async () => {},
@@ -136,7 +137,6 @@ export const FoodContextProvider: React.FC = ({ children }) => {
         },
       })
       .then((res) => {
-        console.log(res);
         setOrders(res.data.orders);
         checkToken(res.data.token);
         setLoading(false);
@@ -169,6 +169,37 @@ export const FoodContextProvider: React.FC = ({ children }) => {
         setOrders(res.data.orders);
         checkToken(res.data.token);
         setLoading(false);
+      })
+      .catch((e) => {
+        console.log(e);
+        setLoading(false);
+      });
+  }
+
+  async function updateOrder(
+    orderId: number,
+    status: string,
+    isCompleted: boolean
+  ) {
+    setLoading(true);
+
+    const data = {
+      orderId,
+      status,
+      isCompleted,
+    };
+
+    await axios
+      .patch(`${backendUrl}api/order/update`, data, {
+        headers: {
+          Authorization: "Bearer " + cookies?.accessToken,
+          refreshToken: cookies!.refreshToken,
+        },
+      })
+      .then((res) => {
+        checkToken(res.data.token);
+        setLoading(false);
+        getOrders();
       })
       .catch((e) => {
         console.log(e);
@@ -256,6 +287,7 @@ export const FoodContextProvider: React.FC = ({ children }) => {
     cartItems,
     getOrders,
     addOrder,
+    updateOrder,
     favoriteFoodies,
     getFavorites,
     addToFavorites,

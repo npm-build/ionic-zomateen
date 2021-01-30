@@ -55,6 +55,7 @@ OrderRouter.patch(
       .then(() => res.send({ message: "Updated Order!!!", token }))
       .catch((e: Error) => {
         console.error(e);
+        res.send({ error: e, token });
       });
   }
 );
