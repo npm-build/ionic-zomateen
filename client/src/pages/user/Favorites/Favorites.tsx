@@ -45,13 +45,21 @@ function Favorites() {
           <IonTitle color="primary">Favorites</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent className="ion-margin-top" fullscreen>
+      <IonContent className="ion-margin-top ion-padding" fullscreen>
         <IonToast
           isOpen={error}
           onDidDismiss={() => setError(false)}
           message="Add your favorites for a quicker checkout!!!"
           duration={5000}
           color="secondary"
+          buttons={[
+            {
+              text: "Ok",
+              handler: () => {
+                setError(false);
+              },
+            },
+          ]}
         />
         <IonList>
           {favoriteFoodies?.map((food) => (

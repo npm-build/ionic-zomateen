@@ -34,9 +34,27 @@ UserRouter.get(
   authenticateToken,
   async (req: any, res: Response) => {
     const token = req.headers.authorization!.split(" ")[1];
-    const user: UserType = req.user;
+    const user = req.user;
 
-    res.send({ user, token });
+    await userModel
+      .findOne({ usn: user.usn })
+      .then((usr: any) => {
+        const currentUser = {
+          noOfCancels: usr.noOfCancels,
+          favorites: usr.favorites,
+          cartItems: usr.cartItems,
+          isAdmin: usr.isAdmin,
+          firstName: usr.firstName,
+          lastName: usr.lastName,
+          phone: usr.phone,
+          userName: usr.userName,
+          usn: usr.usn,
+        };
+        res.send({ user: currentUser, token });
+      })
+      .catch((e: Error) => {
+        res.send({ error: e, token });
+      });
   }
 );
 
@@ -236,7 +254,7 @@ UserRouter.patch(
     const { foodId } = req.body;
 
     await userModel
-      .updateOne({ usn }, { $pullAll: { favorites: foodId } })
+      .updateOne({ usn }, { $pullAll: { favorites: [foodId] } })
       .then(() => {
         res.send({
           msg: "Food removed from favorites successfully!!!",
@@ -313,12 +331,12 @@ UserRouter.patch(
   authenticateToken,
   async (req: any, res: Response) => {
     const token = req.headers.authorization!.split(" ")[1];
-    const user = req.user;
+    const { usn } = req.user;
     const foodId = req.body.foodId;
 
     await userModel
-      .updateOne({ usn: user.usn }, { $pullAll: { cartItems: foodId } })
-      .then(() => {
+      .updateOne({ usn }, { $pullAll: { cartItems: [foodId] } })
+      .then((idk: any) => {
         res.send({
           message: "Food Item successfully deleted from cart",
           token,

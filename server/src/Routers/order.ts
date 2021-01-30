@@ -24,6 +24,8 @@ OrderRouter.post(
     const token = req.headers.authorization!.split(" ")[1];
     const { foodIds, customerName, messages } = req.body;
 
+    console.log(req.body);
+
     const OrderItem: OrderType = new OrderModel({
       foodIds,
       customerName,
@@ -31,14 +33,12 @@ OrderRouter.post(
     });
 
     await OrderItem.save()
-      .then(async (resp) => {
-        return res.send({ message: "Order successfully placed", token });
+      .then(() => {
+        res.send({ message: "Order successfully placed", token });
       })
       .catch((e: Error) => {
         console.log(e);
-        return res
-          .status(401)
-          .send({ error: "Error placing your order", token });
+        res.status(400).send({ error: "Error placing your order", token });
       });
   }
 );

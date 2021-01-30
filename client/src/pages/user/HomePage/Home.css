@@ -1,11 +1,13 @@
-.horizontal-scroll-row {
-  overflow-x: scroll;
-}
-
 .margin-sides {
   padding: auto;
 }
 
-.user-home-grid {
-  padding-bottom: 50px;
+.justify-center {
+  display: flex;
+  width: fit-content;
+  justify-content: center;
+}
+
+.margin-bottom {
+  margin-bottom: 70px;
 }

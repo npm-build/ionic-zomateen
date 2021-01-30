@@ -42,12 +42,12 @@ const FoodPage: React.FC = () => {
   } = useFood();
 
   async function getStuff() {
-    await getFavorites()
+    await getFavorites();
   }
 
   useEffect(() => {
-    getStuff()
-  }, [])
+    getStuff();
+  }, []);
 
   useEffect(() => {
     if (foodies) {
@@ -96,6 +96,14 @@ const FoodPage: React.FC = () => {
           message="Food item not found!!!"
           duration={4000}
           color="danger"
+          buttons={[
+            {
+              text: "Ok",
+              handler: () => {
+                setError(false);
+              },
+            },
+          ]}
         />
         <IonToast
           isOpen={success}
@@ -103,6 +111,14 @@ const FoodPage: React.FC = () => {
           message="Food Item added to Cart!!!"
           duration={3000}
           color="success"
+          buttons={[
+            {
+              text: "Ok",
+              handler: () => {
+                setSuccess(false);
+              },
+            },
+          ]}
         />
         <IonGrid>
           <IonRow>

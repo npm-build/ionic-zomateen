@@ -14,7 +14,7 @@ const backendUrl = "https://zomateen-backend.herokuapp.com/";
 const FoodItem: React.FC<{ food: FoodType }> = ({ food }) => {
   return (
     <IonCard
-      className="ion-padding fix-width-card"
+      className="fix-width-card"
       routerLink={`/user/food/${food.foodId}`}
     >
       <IonCardHeader>

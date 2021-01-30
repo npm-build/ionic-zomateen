@@ -173,6 +173,14 @@ function SignUpPage() {
                 message="Account Successfully Created!!! Please Login."
                 duration={5000}
                 color="success"
+                buttons={[
+                  {
+                    text: "Ok",
+                    handler: () => {
+                      setSuccess(false);
+                    },
+                  },
+                ]}
               />
               <IonButton expand="block" onClick={handleSignUp}>
                 <IonText color="light">SignUp</IonText>

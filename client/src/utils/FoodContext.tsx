@@ -3,8 +3,8 @@ import axios from "axios";
 
 import { useAuth, checkToken } from "./AuthContext";
 
-// const backendUrl = "http://localhost:8000/";
-const backendUrl = "https://zomateen-backend.herokuapp.com/";
+const backendUrl = "http://localhost:8000/";
+// const backendUrl = "https://zomateen-backend.herokuapp.com/";
 
 export const FoodContext = createContext<FoodContextType>({
   loading: false,
@@ -16,9 +16,11 @@ export const FoodContext = createContext<FoodContextType>({
   getFavorites: async () => {},
   getCartItems: async () => {},
   getOrders: async () => {},
+  addOrder: async () => {},
   addToFavorites: async () => {},
   deleteFromFavorites: async () => {},
   addToCart: async () => {},
+  deleteFromCart: async () => {},
 });
 
 export function useFood(): FoodContextType {
@@ -134,6 +136,36 @@ export const FoodContextProvider: React.FC = ({ children }) => {
         },
       })
       .then((res) => {
+        console.log(res);
+        setOrders(res.data.orders);
+        checkToken(res.data.token);
+        setLoading(false);
+      })
+      .catch((e) => {
+        console.log(e);
+        setLoading(false);
+      });
+  }
+
+  async function addOrder(messages: string) {
+    setLoading(true);
+
+    const foodIds = cartItems?.map((food) => food.foodId);
+
+    const data = {
+      foodIds,
+      customerName: `${currentUser?.firstName} ${currentUser?.lastName}`,
+      messages,
+    };
+
+    await axios
+      .post(`${backendUrl}api/order/add`, data, {
+        headers: {
+          Authorization: "Bearer " + cookies?.accessToken,
+          refreshToken: cookies!.refreshToken,
+        },
+      })
+      .then((res) => {
         setOrders(res.data.orders);
         checkToken(res.data.token);
         setLoading(false);
@@ -149,16 +181,19 @@ export const FoodContextProvider: React.FC = ({ children }) => {
   async function addToCart(foodId: number) {
     setLoading(true);
 
-    const data = { foodId };
-
     await axios
-      .post(`${backendUrl}api/user/cart/add`, data, {
-        headers: {
-          Authorization: "Bearer " + cookies?.accessToken,
-          refreshToken: cookies!.refreshToken,
-        },
-      })
+      .post(
+        `${backendUrl}api/user/cart/add`,
+        { foodId },
+        {
+          headers: {
+            Authorization: "Bearer " + cookies?.accessToken,
+            refreshToken: cookies!.refreshToken,
+          },
+        }
+      )
       .then(() => {
+        getCartItems();
         setLoading(false);
       })
       .catch((e) => {
@@ -186,6 +221,33 @@ export const FoodContextProvider: React.FC = ({ children }) => {
       });
   }
 
+  async function deleteFromCart(foodId: number) {
+    setLoading(true);
+
+    await axios
+      .patch(
+        `${backendUrl}api/user/cart/delete`,
+        { foodId },
+        {
+          headers: {
+            Authorization: "Bearer " + cookies?.accessToken,
+            refreshToken: cookies!.refreshToken,
+          },
+        }
+      )
+      .then(() => {
+        const tempCartItems = cartItems?.filter(
+          (item) => item.foodId !== foodId
+        );
+        setCartItems(tempCartItems!);
+        setLoading(false);
+      })
+      .catch((e) => {
+        console.log(e);
+        setLoading(false);
+      });
+  }
+
   const foodies: FoodContextType = {
     loading,
     foodies: foodItems,
@@ -193,12 +255,14 @@ export const FoodContextProvider: React.FC = ({ children }) => {
     getFood,
     cartItems,
     getOrders,
+    addOrder,
     favoriteFoodies,
     getFavorites,
     addToFavorites,
     deleteFromFavorites,
     addToCart,
     getCartItems,
+    deleteFromCart,
   };
 
   return (

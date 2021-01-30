@@ -16,7 +16,7 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import "./OrdersPage.styles.css";
 import { useFood } from "../../../utils/FoodContext";
@@ -26,7 +26,15 @@ import { Redirect } from "react-router";
 const Home: React.FC = () => {
   const [segmentValue, setSegmentValue] = useState<string>("pending");
   const { loggedIn } = useAuth();
-  const { orders } = useFood();
+  const { orders, getOrders } = useFood();
+
+  async function getStuff() {
+    await getOrders();
+  }
+
+  useEffect(() => {
+    getStuff();
+  }, []);
 
   if (!loggedIn) {
     return <Redirect to="/login" />;

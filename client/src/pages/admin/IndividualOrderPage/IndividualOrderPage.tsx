@@ -67,6 +67,14 @@ const IndividualOrderPage: React.FC = () => {
           message="Order not found!!!"
           duration={5000}
           color="danger"
+          buttons={[
+            {
+              text: "Ok",
+              handler: () => {
+                setError(false);
+              },
+            },
+          ]}
         />
         <IonGrid>
           <IonRow>

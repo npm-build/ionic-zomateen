@@ -99,6 +99,14 @@ function LoginPage() {
                 message="Error Logging in. Please try again later!!!"
                 duration={5000}
                 color="danger"
+                buttons={[
+                  {
+                    text: "Ok",
+                    handler: () => {
+                      setError(false);
+                    },
+                  },
+                ]}
               />
               <IonButton expand="block" onClick={() => handleLogin()}>
                 <IonText color="light">Login</IonText>

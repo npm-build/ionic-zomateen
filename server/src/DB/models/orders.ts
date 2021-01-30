@@ -16,7 +16,7 @@ export const OrderSchema: Schema = new Schema({
   customerName: { type: String, required: true },
   orderId: { type: Number, default: 0 },
   messages: String,
-  status: { type: String, default: "Order Placed" },
+  status: { type: String, default: "pending" },
   isCompleted: { type: Boolean, default: false },
   dateOfOrder: { type: Date, default: Date() },
 });

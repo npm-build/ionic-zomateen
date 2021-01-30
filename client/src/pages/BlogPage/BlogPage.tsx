@@ -59,6 +59,14 @@ const BlogPage: React.FC = () => {
                   message="Swipe right ->"
                   duration={5000}
                   color="light"
+                  buttons={[
+                    {
+                      text: "Ok",
+                      handler: () => {
+                        setSlide(false);
+                      },
+                    },
+                  ]}
                 />
               </IonText>
               <img src={backImg} alt="img" />

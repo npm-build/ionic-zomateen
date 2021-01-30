@@ -31,7 +31,7 @@ function SettingsPage() {
           <IonTitle color="primary">Settings</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent fullscreen scroll-y="false">
+      <IonContent className="ion-padding" fullscreen scroll-y="false">
         <IonText>
           <IonButton expand="block" color="medium" onClick={LogOut}>
             LogOut
