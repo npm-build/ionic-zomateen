@@ -3,7 +3,8 @@ import autoIncrement from "mongoose-auto-increment";
 
 export interface OrderType extends Document {
   foodIds: number[];
-  customerNames: string;
+  customerName: string;
+  usn: string;
   orderId: number;
   messages: string;
   status: string;
@@ -14,6 +15,7 @@ export interface OrderType extends Document {
 export const OrderSchema: Schema = new Schema({
   foodIds: [{ type: Number, required: true }],
   customerName: { type: String, required: true },
+  usn: { type: String, required: true },
   orderId: { type: Number, default: 0 },
   messages: String,
   status: { type: String, default: "pending" },

@@ -41,12 +41,14 @@ function CartPage() {
   }, []);
 
   async function handleDelete(id: number) {
-    await deleteFromCart(id).then(() => setSuccess(true));
+    await deleteFromCart(id);
   }
 
   async function handleClick() {
     if (messageRef.current!.value === null) messageRef.current!.value = "";
-    await addOrder(messageRef.current!.value as string);
+    await addOrder(messageRef.current!.value as string).then(() =>
+      setSuccess(true)
+    );
   }
 
   return (
@@ -89,24 +91,6 @@ function CartPage() {
           <IonRow>
             <IonCol>
               <IonList>
-                <IonToast
-                  isOpen={success}
-                  onDidDismiss={() => setSuccess(false)}
-                  message="Food Item removed from Cart!!!"
-                  duration={3000}
-                  color="success"
-                  buttons={[
-                    {
-                      text: "Ok",
-                      handler: () => {
-                        setSuccess(false);
-                      },
-                    },
-                  ]}
-                />
-                {cartItems ? null : (
-                  <IonText>Your favorites will appear here</IonText>
-                )}
                 {cartItems ? (
                   cartItems?.map((food) => (
                     <IonItem key={food.foodId}>

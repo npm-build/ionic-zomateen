@@ -13,22 +13,33 @@ OrderRouter.get(
   async (req: Request, res: Response) => {
     const token = req.headers.authorization!.split(" ")[1];
     const orders = await OrderModel.find({});
-    res.send({ orders, token });
+    return res.send({ orders, token });
+  }
+);
+
+OrderRouter.get(
+  "/api/order/getuserorders",
+  authenticateToken,
+  async (req: any, res: Response) => {
+    const token = req.headers.authorization!.split(" ")[1];
+    const user = req.user;
+    const orders = await OrderModel.find({ usn: user.usn });
+    return res.send({ orders, token });
   }
 );
 
 OrderRouter.post(
   "/api/order/add",
   authenticateToken,
-  async (req: Request, res: Response) => {
+  async (req: any, res: Response) => {
     const token = req.headers.authorization!.split(" ")[1];
+    const user = req.user;
     const { foodIds, customerName, messages } = req.body;
-
-    console.log(req.body);
 
     const OrderItem: OrderType = new OrderModel({
       foodIds,
       customerName,
+      usn: user.usn,
       messages,
     });
 
@@ -67,7 +78,6 @@ OrderRouter.delete(
   async (req: Request, res: Response) => {
     const token = req.headers.authorization!.split(" ")[1];
     const { orderId } = req.body;
-    console.log(orderId);
 
     await OrderModel.deleteOne({ orderId })
       .then(() => {
@@ -83,7 +93,8 @@ OrderRouter.delete(
 
 function authenticateUser(req: any, res: Response, next: NextFunction) {
   const user = req.user;
-  if (user.usn) {
+
+  if (user.isAdmin === "false") {
     console.log("Error authenticating user!!!");
     return res.send({ error: "Error authenticating user!!!" });
   } else next();

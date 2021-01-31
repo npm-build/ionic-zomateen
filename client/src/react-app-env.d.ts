@@ -69,9 +69,11 @@ interface FoodContextType {
   foodies: FoodType[] | null;
   cartItems: FoodType[] | null;
   orders: OrderType[] | null;
+  userOrders: OrderType[] | null;
   favoriteFoodies: FoodType[] | null;
   getFood: () => Promise<void>;
   getOrders: () => Promise<void>;
+  getUserOrders: () => Promise<void>;
   addOrder: (messages: string) => Promise<void>;
   updateOrder: (
     orderId: number,

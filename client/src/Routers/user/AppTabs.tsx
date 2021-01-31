@@ -12,6 +12,7 @@ import {
   heartOutline as heartIcon,
   settings as settingsIcon,
   cart,
+  notifications,
 } from "ionicons/icons";
 import React from "react";
 import { Redirect, Route } from "react-router-dom";
@@ -23,6 +24,7 @@ import SettingsPage from "../../pages/SettingsPage";
 
 import { useAuth } from "../../utils/AuthContext";
 import CartPage from "../../pages/user/CartPage/CartPage";
+import NotificationPage from "../../pages/user/NotificationPage/NotificationPage";
 
 function AppTabs() {
   const { loggedIn, loading } = useAuth();
@@ -50,6 +52,9 @@ function AppTabs() {
         <Route exact path="/user/cart">
           <CartPage />
         </Route>
+        <Route exact path="/user/notifications">
+          <NotificationPage />
+        </Route>
         <Route exact path="/user/settings">
           <SettingsPage />
         </Route>
@@ -66,6 +71,10 @@ function AppTabs() {
         <IonTabButton tab="cart" href="/user/cart">
           <IonIcon icon={cart} />
           <IonLabel>Cart</IonLabel>
+        </IonTabButton>
+        <IonTabButton tab="notification" href="/user/notifications">
+          <IonIcon icon={notifications} />
+          <IonLabel>Notifications</IonLabel>
         </IonTabButton>
         <IonTabButton tab="settings" href="/user/settings">
           <IonIcon icon={settingsIcon} />

@@ -37,6 +37,7 @@ const IndividualOrderPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [order, setOrder] = useState<OrderType | null>(null);
   const [error, setError] = useState<boolean>(false);
+  const [success, setSuccess] = useState<boolean>(false);
 
   const { orders, foodies, getFood, updateOrder } = useFood();
 
@@ -53,11 +54,14 @@ const IndividualOrderPage: React.FC = () => {
 
   async function handleClick() {
     if (order?.status === "pending") {
-      await updateOrder(order.orderId, "progress", false);
+      await updateOrder(order.orderId, "progress", false).then(() =>
+        setSuccess(true)
+      );
     } else if (order?.status === "progress") {
-      await updateOrder(order.orderId, "ready", true);
+      await updateOrder(order.orderId, "ready", true).then(() =>
+        setSuccess(true)
+      );
     } else {
-      // await updateOrder(order!.orderId);
       console.log("Will Notify Soon!!!");
     }
   }
@@ -84,6 +88,21 @@ const IndividualOrderPage: React.FC = () => {
               text: "Ok",
               handler: () => {
                 setError(false);
+              },
+            },
+          ]}
+        />
+        <IonToast
+          isOpen={success}
+          onDidDismiss={() => setSuccess(false)}
+          message="Order successfully updated!!!"
+          duration={3000}
+          color="success"
+          buttons={[
+            {
+              text: "Ok",
+              handler: () => {
+                setSuccess(false);
               },
             },
           ]}

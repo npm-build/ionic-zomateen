@@ -2,9 +2,10 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 
 import { useAuth, checkToken } from "./AuthContext";
+import { NumberSchema } from "yup";
 
-// const backendUrl = "http://localhost:8000/";
-const backendUrl = "https://zomateen-backend.herokuapp.com/";
+const backendUrl = "http://localhost:8000/";
+// const backendUrl = "https://zomateen-backend.herokuapp.com/";
 
 export const FoodContext = createContext<FoodContextType>({
   loading: false,
@@ -12,10 +13,12 @@ export const FoodContext = createContext<FoodContextType>({
   favoriteFoodies: null,
   cartItems: null,
   orders: null,
+  userOrders: null,
   getFood: async () => {},
   getFavorites: async () => {},
   getCartItems: async () => {},
   getOrders: async () => {},
+  getUserOrders: async () => {},
   addOrder: async () => {},
   updateOrder: async () => {},
   addToFavorites: async () => {},
@@ -33,6 +36,7 @@ export const FoodContextProvider: React.FC = ({ children }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [cartItems, setCartItems] = useState<FoodType[] | null>(null);
   const [orders, setOrders] = useState<OrderType[] | null>(null);
+  const [userOrders, setUserOrders] = useState<OrderType[] | null>(null);
   const [favoriteFoodies, setFavoriteFoodies] = useState<FoodType[] | null>(
     null
   );
@@ -138,6 +142,27 @@ export const FoodContextProvider: React.FC = ({ children }) => {
       })
       .then((res) => {
         setOrders(res.data.orders);
+        checkToken(res.data.token);
+        setLoading(false);
+      })
+      .catch((e) => {
+        console.log(e);
+        setLoading(false);
+      });
+  }
+
+  async function getUserOrders() {
+    setLoading(true);
+
+    await axios
+      .get(`${backendUrl}api/order/getuserorders`, {
+        headers: {
+          Authorization: "Bearer " + cookies?.accessToken,
+          refreshToken: cookies!.refreshToken,
+        },
+      })
+      .then((res) => {
+        setUserOrders(res.data.orders);
         checkToken(res.data.token);
         setLoading(false);
       })
@@ -283,9 +308,11 @@ export const FoodContextProvider: React.FC = ({ children }) => {
     loading,
     foodies: foodItems,
     orders,
+    userOrders,
     getFood,
     cartItems,
     getOrders,
+    getUserOrders,
     addOrder,
     updateOrder,
     favoriteFoodies,

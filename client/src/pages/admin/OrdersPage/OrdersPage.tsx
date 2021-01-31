@@ -81,19 +81,22 @@ const Home: React.FC = () => {
                         button
                         routerLink={`/admin/order/${order.orderId}`}
                         key={order.orderId}
-                        color={
-                          segmentValue === "pending"
-                            ? "danger"
-                            : segmentValue === "progress"
-                            ? "yellow"
-                            : "success"
-                        }
                       >
                         <IonThumbnail
                           className="ion-padding-vertical"
                           slot="start"
                         >
-                          <IonText color="medium">{order.orderId}</IonText>
+                          <IonText
+                            color={
+                              segmentValue === "pending"
+                                ? "danger"
+                                : segmentValue === "progress"
+                                ? "warning"
+                                : "success"
+                            }
+                          >
+                            {order.orderId}
+                          </IonText>
                         </IonThumbnail>
                         <IonLabel>
                           <h2 style={{ fontSize: "20px", fontWeight: 400 }}>
