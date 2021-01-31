@@ -1,7 +1,6 @@
 import express, { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { db } from "../DB/db";
 import { authenticateToken } from "../utils/token";
 import { userModel, UserType } from "../DB/models/user";
 import { generateAccessTokenUser } from "../utils/token";
@@ -15,24 +14,14 @@ export const UserRouter = express.Router();
 const REFRESH_TOKEN_SECRET =
   "aa1e207051c835692d4fb6c9f3073bb5e32e747c12baa3bc0a208c0c6383730466dc626e35fb0a0d64aa1aba5cd8b11e69c4e15df02e40caef7a930854b76e32";
 
-UserRouter.get("/api/users", async (req: Request, res: Response) => {
-  try {
-    const users = await userModel.find({});
-    return res.send(users);
-  } catch (e: any) {
-    console.log(e);
-  }
-});
-
-UserRouter.get("/api/user/dropDB", async (req: Request, res: Response) => {
-  await db.dropDatabase();
-  res.send({ msg: "Db dropped" });
-});
-
 UserRouter.get(
   "/api/user/getuser",
   authenticateToken,
   async (req: any, res: Response) => {
+    if (req.error) {
+      return res.send({ error: req.error });
+    }
+
     const token = req.headers.authorization!.split(" ")[1];
     const user = req.user;
 
@@ -117,6 +106,10 @@ UserRouter.delete(
   "/api/user/logout",
   authenticateToken,
   async (req: any, res: Response) => {
+    if (req.error) {
+      return res.send({ error: req.error });
+    }
+
     const user = req.user;
     const token = req.headers.authorization!.split(" ")[1];
 
@@ -170,7 +163,12 @@ UserRouter.post("/api/user/signup", async (req: Request, res: Response) => {
 
 UserRouter.patch(
   "/api/user/forgotpassword",
-  async (req: Request, res: Response) => {
+  authenticateToken,
+  async (req: any, res: Response) => {
+    if (req.error) {
+      return res.send({ error: req.error });
+    }
+
     const userName = req.body.userName;
     const usn = req.body.usn;
     const password = req.body.password;
@@ -179,7 +177,7 @@ UserRouter.patch(
       { userName, usn },
       { password },
       { runValidators: true },
-      (err, resp) => {
+      (err) => {
         if (err) {
           return res.send({ error: "Error updating password!!!" });
         } else {
@@ -195,7 +193,11 @@ UserRouter.patch(
 UserRouter.patch(
   "/api/user/addtofavorites",
   authenticateToken,
-  async (req: Request, res: Response) => {
+  async (req: any, res: Response) => {
+    if (req.error) {
+      return res.send({ error: req.error });
+    }
+
     const token = req.headers.authorization!.split(" ")[1];
     const { usn, foodId } = req.body;
 
@@ -218,6 +220,10 @@ UserRouter.get(
   "/api/user/getfavorites",
   authenticateToken,
   async (req: any, res: Response) => {
+    if (req.error) {
+      return res.send({ error: req.error });
+    }
+
     const token = req.headers.authorization!.split(" ")[1];
     const { usn } = req.user;
 
@@ -249,6 +255,10 @@ UserRouter.patch(
   "/api/user/deletefromfavorites",
   authenticateToken,
   async (req: any, res: Response) => {
+    if (req.error) {
+      return res.send({ error: req.error });
+    }
+
     const token = req.headers.authorization!.split(" ")[1];
     const usn = req.user.usn;
     const { foodId } = req.body;
@@ -277,6 +287,10 @@ UserRouter.post(
   "/api/user/cart/add",
   authenticateToken,
   async (req: any, res: Response) => {
+    if (req.error) {
+      return res.send({ error: req.error });
+    }
+
     const token = req.headers.authorization!.split(" ")[1];
     const foodId: number = req.body.foodId;
     const { usn } = req.user;
@@ -308,6 +322,10 @@ UserRouter.get(
   "/api/user/cart",
   authenticateToken,
   async (req: any, res: Response) => {
+    if (req.error) {
+      return res.send({ error: req.error });
+    }
+
     const token = req.headers.authorization!.split(" ")[1];
     const user = req.user;
     const DBuser: UserType | null = await userModel.findOne({ usn: user.usn });
@@ -330,6 +348,10 @@ UserRouter.patch(
   "/api/user/cart/delete",
   authenticateToken,
   async (req: any, res: Response) => {
+    if (req.error) {
+      return res.send({ error: req.error });
+    }
+
     const token = req.headers.authorization!.split(" ")[1];
     const { usn } = req.user;
     const foodId = req.body.foodId;

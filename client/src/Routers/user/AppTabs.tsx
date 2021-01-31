@@ -9,7 +9,7 @@ import {
 } from "@ionic/react";
 import {
   home as homeIcon,
-  heartOutline as heartIcon,
+  heart as heartIcon,
   settings as settingsIcon,
   cart,
   notifications,

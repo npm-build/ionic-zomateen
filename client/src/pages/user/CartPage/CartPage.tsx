@@ -13,6 +13,8 @@ import {
   IonLoading,
   IonPage,
   IonRow,
+  IonSegment,
+  IonSegmentButton,
   IonText,
   IonThumbnail,
   IonTitle,
@@ -23,14 +25,20 @@ import React, { useEffect, useRef, useState } from "react";
 
 import "./CartPage.style.scss";
 import { useFood } from "../../../utils/FoodContext";
-import { trashBin } from "ionicons/icons";
+import { card, cash, trashBin } from "ionicons/icons";
 
 const backendUrl = "https://zomateen-backend.herokuapp.com/";
 
 function CartPage() {
   const [success, setSuccess] = useState<boolean>(false);
   const messageRef = useRef<HTMLIonInputElement>(null);
-  const { cartItems, getCartItems, deleteFromCart, addOrder } = useFood();
+  const {
+    cartItems,
+    getCartItems,
+    deleteFromCart,
+    addOrder,
+    loading,
+  } = useFood();
 
   async function getStuff() {
     await getCartItems();
@@ -76,10 +84,23 @@ function CartPage() {
                 },
               ]}
             />
+            <IonLoading isOpen={loading} />
             <IonCol>
-              <IonButton onClick={handleClick}>
-                <IonText color="light">Place Order</IonText>
-              </IonButton>
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <IonButton onClick={handleClick}>
+                  <IonText color="light">Place Order</IonText>
+                </IonButton>
+                <IonSegment scrollable value="cod">
+                  <IonSegmentButton value="cod">
+                    <IonIcon icon={cash} />
+                    <IonLabel>Cash on Delivery</IonLabel>
+                  </IonSegmentButton>
+                  <IonSegmentButton value="card">
+                    <IonIcon icon={card} />
+                    <IonLabel>Online Payment</IonLabel>
+                  </IonSegmentButton>
+                </IonSegment>
+              </div>
             </IonCol>
             <IonCol>
               <IonItem>
@@ -91,8 +112,8 @@ function CartPage() {
           <IonRow>
             <IonCol>
               <IonList>
-                {cartItems ? (
-                  cartItems?.map((food) => (
+                {cartItems &&
+                  cartItems.map((food) => (
                     <IonItem key={food.foodId}>
                       <IonLabel color="medium">{food.name}</IonLabel>
                       <IonLabel color="medium">Rs {food.price}</IonLabel>
@@ -107,10 +128,7 @@ function CartPage() {
                         <IonIcon color="light" icon={trashBin} />
                       </IonButton>
                     </IonItem>
-                  ))
-                ) : (
-                  <IonLoading isOpen={true} />
-                )}
+                  ))}
               </IonList>
             </IonCol>
           </IonRow>

@@ -10,6 +10,7 @@ import {
   IonItem,
   IonLabel,
   IonList,
+  IonLoading,
   IonPage,
   IonRow,
   IonText,
@@ -39,7 +40,7 @@ const IndividualOrderPage: React.FC = () => {
   const [error, setError] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
 
-  const { orders, foodies, getFood, updateOrder } = useFood();
+  const { orders, foodies, getFood, updateOrder, loading } = useFood();
 
   async function getStuff() {
     await getFood();
@@ -77,6 +78,7 @@ const IndividualOrderPage: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
+        <IonLoading isOpen={loading} />
         <IonToast
           isOpen={error}
           onDidDismiss={() => setError(false)}

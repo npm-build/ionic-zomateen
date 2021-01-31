@@ -8,6 +8,7 @@ import {
   IonHeader,
   IonIcon,
   IonLabel,
+  IonLoading,
   IonPage,
   IonRow,
   IonText,
@@ -39,6 +40,7 @@ const FoodPage: React.FC = () => {
     deleteFromFavorites,
     getFavorites,
     addToCart,
+    loading,
   } = useFood();
 
   async function getStuff() {
@@ -105,6 +107,7 @@ const FoodPage: React.FC = () => {
             },
           ]}
         />
+        <IonLoading isOpen={loading} />
         <IonToast
           isOpen={success}
           onDidDismiss={() => setSuccess(false)}

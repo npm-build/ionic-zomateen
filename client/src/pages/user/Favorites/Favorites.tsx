@@ -24,7 +24,7 @@ const backendUrl = "https://zomateen-backend.herokuapp.com/";
 
 function Favorites() {
   const [error, setError] = useState<boolean>(false);
-  const { favoriteFoodies, getFavorites } = useFood();
+  const { favoriteFoodies, getFavorites, loading } = useFood();
   const { loggedIn } = useAuth();
 
   async function getStuff() {
@@ -63,9 +63,7 @@ function Favorites() {
           ]}
         />
         <IonList>
-          {favoriteFoodies ? null : (
-            <IonText>Your favorites will appear here</IonText>
-          )}
+          <IonLoading isOpen={loading} />
           {favoriteFoodies ? (
             favoriteFoodies?.map((food) => (
               <IonItem
@@ -87,7 +85,7 @@ function Favorites() {
               </IonItem>
             ))
           ) : (
-            <IonLoading isOpen={true} />
+            <IonText>Your favorites will appear here</IonText>
           )}
         </IonList>
       </IonContent>

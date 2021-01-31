@@ -8,7 +8,6 @@ import {
   IonList,
   IonItem,
   IonToast,
-  IonThumbnail,
   IonText,
   IonLoading,
 } from "@ionic/react";
@@ -26,7 +25,7 @@ function formateDate(isoString: string) {
 
 function NotificationPage() {
   const [error, setError] = useState<boolean>(false);
-  const { userOrders, getUserOrders } = useFood();
+  const { userOrders, getUserOrders, loading } = useFood();
 
   async function getStuff() {
     await getUserOrders();
@@ -60,7 +59,8 @@ function NotificationPage() {
           ]}
         />
         <IonList>
-          {userOrders ? (
+          <IonLoading isOpen={loading} />
+          {userOrders &&
             userOrders?.map((order) => (
               <IonItem key={order.orderId}>
                 {order.isCompleted}
@@ -82,10 +82,7 @@ function NotificationPage() {
                   <h3>Message: {order.messages}</h3>
                 </IonLabel>
               </IonItem>
-            ))
-          ) : (
-            <IonLoading isOpen={true} />
-          )}
+            ))}
         </IonList>
       </IonContent>
     </IonPage>

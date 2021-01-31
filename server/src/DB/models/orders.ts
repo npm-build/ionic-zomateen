@@ -1,6 +1,8 @@
 import { Schema, model, Document } from "mongoose";
 import autoIncrement from "mongoose-auto-increment";
 
+import { db } from "../db";
+
 export interface OrderType extends Document {
   foodIds: number[];
   customerName: string;
@@ -10,6 +12,8 @@ export interface OrderType extends Document {
   status: string;
   isCompleted: boolean;
   dateOfOrder: Date;
+  paid: boolean;
+  paymentMode: string;
 }
 
 export const OrderSchema: Schema = new Schema({
@@ -21,7 +25,11 @@ export const OrderSchema: Schema = new Schema({
   status: { type: String, default: "pending" },
   isCompleted: { type: Boolean, default: false },
   dateOfOrder: { type: Date, default: Date() },
+  paid: { type: Boolean, default: false },
+  paymentMode: { type: String, required: true },
 });
+
+autoIncrement.initialize(db);
 
 OrderSchema.plugin(autoIncrement.plugin, {
   model: "order",

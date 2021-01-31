@@ -26,7 +26,7 @@ import { Redirect } from "react-router";
 const Home: React.FC = () => {
   const [segmentValue, setSegmentValue] = useState<string>("pending");
   const { loggedIn } = useAuth();
-  const { orders, getOrders } = useFood();
+  const { orders, getOrders, loading } = useFood();
 
   async function getStuff() {
     await getOrders();
@@ -52,6 +52,7 @@ const Home: React.FC = () => {
       <IonContent fullscreen>
         <IonGrid className="user-home-grid">
           <IonRow>
+            <IonLoading isOpen={loading} />
             <IonCol className="margin-sides">
               <IonSegment
                 value={segmentValue}
@@ -72,7 +73,7 @@ const Home: React.FC = () => {
           <IonRow className="horizontal-scroll-row">
             <IonCol>
               <IonList>
-                {orders ? (
+                {orders &&
                   orders?.map((order) => {
                     return order.status === segmentValue ? (
                       <IonItem
@@ -105,10 +106,7 @@ const Home: React.FC = () => {
                         </IonLabel>
                       </IonItem>
                     ) : null;
-                  })
-                ) : (
-                  <IonLoading isOpen />
-                )}
+                  })}
               </IonList>
             </IonCol>
           </IonRow>

@@ -25,7 +25,7 @@ const Home: React.FC = () => {
   const [filteredFoodies, setFilteredFoodies] = useState<FoodType[] | null>(
     null
   );
-  const { foodies, getFood, getFavorites } = useFood();
+  const { foodies, getFood, getFavorites, loading } = useFood();
   const { loggedIn } = useAuth();
 
   useEffect(() => {
@@ -67,6 +67,7 @@ const Home: React.FC = () => {
       <IonContent className="ion-margin-top" fullscreen>
         <IonGrid className="user-home-grid">
           <IonRow>
+            <IonLoading isOpen={loading} />
             <IonCol className="margin-sides">
               <IonSegment
                 value={segmentValue}
@@ -85,15 +86,12 @@ const Home: React.FC = () => {
             </IonCol>
           </IonRow>
           <IonRow className="margin-bottom">
-            {foodies ? (
+            {foodies &&
               filteredFoodies?.map((food) => (
                 <IonCol className="justify-center" key={food.foodId}>
                   <FoodItem food={food} />
                 </IonCol>
-              ))
-            ) : (
-              <IonLoading isOpen />
-            )}
+              ))}
           </IonRow>
         </IonGrid>
       </IonContent>

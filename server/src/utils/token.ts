@@ -86,3 +86,13 @@ export function authenticateToken(req: any, res: Response, next: NextFunction) {
     next();
   });
 }
+
+export function authenticateUser(req: any, res: Response, next: NextFunction) {
+  const user = req.user;
+
+  if (user.isAdmin === "false") {
+    console.log("Error authenticating user!!!");
+    req.error("Error authenticating user!!!");
+    next();
+  } else next();
+}

@@ -1,16 +1,19 @@
-import express, { Request, Response, NextFunction } from "express";
+import express, { Response } from "express";
 
 import { OrderModel, OrderType } from "../DB/models/orders";
-// import { db } from "../DB/db";
-import { authenticateToken } from "../utils/token";
-// import { FoodModel, FoodType } from "../DB/models/foodItem";
+import { authenticateToken, authenticateUser } from "../utils/token";
 
 export const OrderRouter = express.Router();
 
 OrderRouter.get(
   "/api/order/getorders",
   authenticateToken,
-  async (req: Request, res: Response) => {
+  authenticateUser,
+  async (req: any, res: Response) => {
+    if (req.error) {
+      return res.send({ error: req.error });
+    }
+
     const token = req.headers.authorization!.split(" ")[1];
     const orders = await OrderModel.find({});
     return res.send({ orders, token });
@@ -21,6 +24,10 @@ OrderRouter.get(
   "/api/order/getuserorders",
   authenticateToken,
   async (req: any, res: Response) => {
+    if (req.error) {
+      return res.send({ error: req.error });
+    }
+
     const token = req.headers.authorization!.split(" ")[1];
     const user = req.user;
     const orders = await OrderModel.find({ usn: user.usn });
@@ -31,16 +38,22 @@ OrderRouter.get(
 OrderRouter.post(
   "/api/order/add",
   authenticateToken,
+  authenticateUser,
   async (req: any, res: Response) => {
+    if (req.error) {
+      return res.send({ error: req.error });
+    }
+
     const token = req.headers.authorization!.split(" ")[1];
     const user = req.user;
-    const { foodIds, customerName, messages } = req.body;
+    const { foodIds, customerName, messages, paymentMode } = req.body;
 
     const OrderItem: OrderType = new OrderModel({
       foodIds,
       customerName,
       usn: user.usn,
       messages,
+      paymentMode,
     });
 
     await OrderItem.save()
@@ -58,11 +71,15 @@ OrderRouter.patch(
   "/api/order/update",
   authenticateToken,
   authenticateUser,
-  async (req: Request, res: Response) => {
-    const token = req.headers.authorization!.split(" ")[1];
-    const { orderId, status, isCompleted } = req.body;
+  async (req: any, res: Response) => {
+    if (req.error) {
+      return res.send({ error: req.error });
+    }
 
-    await OrderModel.updateOne({ orderId }, { status, isCompleted })
+    const token = req.headers.authorization!.split(" ")[1];
+    const { orderId, status, isCompleted, paid } = req.body;
+
+    await OrderModel.updateOne({ orderId }, { status, isCompleted, paid })
       .then(() => res.send({ message: "Updated Order!!!", token }))
       .catch((e: Error) => {
         console.error(e);
@@ -75,7 +92,11 @@ OrderRouter.delete(
   "/api/order/delete",
   authenticateToken,
   authenticateUser,
-  async (req: Request, res: Response) => {
+  async (req: any, res: Response) => {
+    if (req.error) {
+      return res.send({ error: req.error });
+    }
+
     const token = req.headers.authorization!.split(" ")[1];
     const { orderId } = req.body;
 
@@ -90,12 +111,3 @@ OrderRouter.delete(
       });
   }
 );
-
-function authenticateUser(req: any, res: Response, next: NextFunction) {
-  const user = req.user;
-
-  if (user.isAdmin === "false") {
-    console.log("Error authenticating user!!!");
-    return res.send({ error: "Error authenticating user!!!" });
-  } else next();
-}

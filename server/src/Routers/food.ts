@@ -1,8 +1,7 @@
-import express, { Request, Response, NextFunction } from "express";
+import express, { Response } from "express";
 import { UploadedFile } from "express-fileupload";
 
-import { db } from "../DB/db";
-import { authenticateToken } from "../utils/token";
+import { authenticateToken, authenticateUser } from "../utils/token";
 import { FoodModel, FoodType } from "../DB/models/foodItem";
 
 export const FoodRouter = express.Router();
@@ -10,7 +9,11 @@ export const FoodRouter = express.Router();
 FoodRouter.get(
   "/api/getfoodies",
   authenticateToken,
-  async (req: Request, res: Response) => {
+  async (req: any, res: Response) => {
+    if (req.error) {
+      return res.send({ error: req.error });
+    }
+
     const token = req.headers.authorization!.split(" ")[1];
     const foodies = await FoodModel.find({});
     res.send({ foodies, token });
@@ -20,7 +23,11 @@ FoodRouter.get(
 FoodRouter.post(
   "/api/food/getfood",
   authenticateToken,
-  async (req: Request, res: Response) => {
+  async (req: any, res: Response) => {
+    if (req.error) {
+      return res.send({ error: req.error });
+    }
+
     const token = req.headers.authorization!.split(" ")[1];
     const { foodId } = req.body;
     const food = await FoodModel.findOne({ foodId });
@@ -28,16 +35,15 @@ FoodRouter.post(
   }
 );
 
-FoodRouter.get("/api/food/dropDB", async (req: Request, res: Response) => {
-  await db.dropDatabase();
-  res.send({ msg: "Db dropped" });
-});
-
 FoodRouter.post(
   "/api/food/add",
   authenticateToken,
   authenticateUser,
-  async (req: Request, res: Response) => {
+  async (req: any, res: Response) => {
+    if (req.error) {
+      return res.send({ error: req.error });
+    }
+
     const token = req.headers.authorization!.split(" ")[1];
     const { name, foodId, tags, price, isAvailable, day } = req.body;
 
@@ -80,7 +86,7 @@ FoodRouter.post(
 
     await foodItem
       .save()
-      .then((resp) => {
+      .then(() => {
         console.log("Food Item Added successfully");
         return res.send({ message: "Food Item Added successfully", token });
       })
@@ -95,7 +101,11 @@ FoodRouter.patch(
   "/api/food/update",
   authenticateToken,
   authenticateUser,
-  async (req: Request, res: Response) => {
+  async (req: any, res: Response) => {
+    if (req.error) {
+      return res.send({ error: req.error });
+    }
+
     const token = req.headers.authorization!.split(" ")[1];
     const { foodId, isAvailable } = req.body;
 
@@ -109,7 +119,11 @@ FoodRouter.delete(
   "/api/food/delete",
   authenticateToken,
   authenticateUser,
-  async (req: Request, res: Response) => {
+  async (req: any, res: Response) => {
+    if (req.error) {
+      return res.send({ error: req.error });
+    }
+
     const token = req.headers.authorization!.split(" ")[1];
     const { foodId } = req.body;
 
@@ -123,11 +137,3 @@ FoodRouter.delete(
       });
   }
 );
-
-function authenticateUser(req: any, res: Response, next: NextFunction) {
-  const user = req.user;
-  if (user.usn) {
-    console.log("Error authorizing user!!!");
-    return res.send("Error authorizing user!!!");
-  } else next();
-}

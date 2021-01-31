@@ -34,13 +34,10 @@ function SignUpPage() {
   const [segmentValue, setSegmentValue] = useState<string>("user");
   const [success, setSuccess] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
 
-  const { signUp } = useAuth();
+  const { signUp, loading } = useAuth();
 
   async function handleSignUp() {
-    setLoading(true);
-
     if (passwordRef.current !== null && confirmPasswordRef.current !== null) {
       if (passwordRef.current.value !== confirmPasswordRef.current.value) {
         setError(true);
@@ -58,11 +55,9 @@ function SignUpPage() {
 
       await signUp(data, segmentValue)
         .then(() => {
-          setLoading(false);
           setSuccess(true);
         })
         .catch((e) => {
-          setLoading(false);
           console.log(e);
           setError(e.code);
         });
