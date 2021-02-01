@@ -4,8 +4,6 @@ import {
   IonContent,
   IonGrid,
   IonHeader,
-  IonImg,
-  IonItem,
   IonPage,
   IonRow,
   IonText,
@@ -36,7 +34,7 @@ function SettingsPage() {
           <IonTitle color="primary">Settings</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent className="ion-padding" fullscreen scroll-y="false">
+      <IonContent className="ion-padding" fullscreen>
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div className="ion-padding">
             <IonText color="tertiary">
@@ -80,7 +78,7 @@ function SettingsPage() {
               </IonCol>
             </IonRow>
           </IonGrid>
-          <div className="ion-padding">
+          <div className="ion-padding margin-bottom">
             <IonButton expand="block" color="light">
               Update Profile
             </IonButton>

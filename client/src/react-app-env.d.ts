@@ -39,7 +39,6 @@ interface AuthContextType {
   redirectUrl: string;
   loading: boolean;
   currentUser: UserType | null;
-  errorContext: string | null;
   cookies: {
     accessToken: string;
     refreshToken: string;
@@ -74,7 +73,7 @@ interface FoodContextType {
   getFood: () => Promise<void>;
   getOrders: () => Promise<void>;
   getUserOrders: () => Promise<void>;
-  addOrder: (messages: string) => Promise<void>;
+  addOrder: (messages: string, paymentMode: string) => Promise<void>;
   updateOrder: (
     orderId: number,
     status: string,

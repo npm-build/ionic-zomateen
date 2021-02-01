@@ -30,7 +30,7 @@ function LoginPage() {
   const [segmentValue, setSegmentValue] = useState<string>("user");
   const [error, setError] = useState<boolean>(false);
 
-  const { login, loading, errorContext, loggedIn, redirectUrl } = useAuth();
+  const { login, loading, loggedIn, redirectUrl } = useAuth();
   const history = useHistory();
 
   if (loggedIn) {
@@ -45,7 +45,6 @@ function LoginPage() {
         segmentValue
       )
         .then(() => {
-          if (errorContext) return setError(true);
           segmentValue === "admin"
             ? history.push("/admin/orders")
             : history.push("/user/home");

@@ -171,7 +171,7 @@ export const FoodContextProvider: React.FC = ({ children }) => {
       });
   }
 
-  async function addOrder(messages: string) {
+  async function addOrder(messages: string, paymentMode: string) {
     setLoading(true);
 
     const foodIds = cartItems?.map((food) => food.foodId);
@@ -180,6 +180,7 @@ export const FoodContextProvider: React.FC = ({ children }) => {
       foodIds,
       customerName: `${currentUser?.firstName} ${currentUser?.lastName}`,
       messages,
+      paymentMode,
     };
 
     await axios
@@ -190,8 +191,12 @@ export const FoodContextProvider: React.FC = ({ children }) => {
         },
       })
       .then((res) => {
+        setCartItems(null);
         setOrders(res.data.orders);
         checkToken(res.data.token);
+        foodIds?.map(async (id) => {
+          deleteFromCart(id);
+        });
         setLoading(false);
       })
       .catch((e) => {

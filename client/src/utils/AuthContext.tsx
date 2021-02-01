@@ -10,7 +10,6 @@ export const AuthContext = createContext<AuthContextType>({
   loading: false,
   currentUser: null,
   cookies: null,
-  errorContext: null,
   login: async () => {},
   logOut: async () => {},
   signUp: async () => {},
@@ -37,7 +36,6 @@ export const AuthContextProvider: React.FC = ({ children }) => {
   const [redirectUrl, setRedirectUrl] = useState<string>(() => {
     return isAdmin === "true" ? "/admin/orders" : "/user/home";
   });
-  const [errorContext, setErrorContext] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [user, setUser] = useState<UserType | null>(null);
   const [cookies, setCookies] = useState<{
@@ -202,7 +200,6 @@ export const AuthContextProvider: React.FC = ({ children }) => {
       .catch((e) => {
         setLoading(false);
         console.log(e);
-        throw new Error(e);
       });
   }
 
@@ -215,7 +212,6 @@ export const AuthContextProvider: React.FC = ({ children }) => {
     login,
     signUp,
     cookies,
-    errorContext,
     updateUser,
   };
 

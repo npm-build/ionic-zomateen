@@ -31,6 +31,8 @@ const backendUrl = "https://zomateen-backend.herokuapp.com/";
 
 function CartPage() {
   const [success, setSuccess] = useState<boolean>(false);
+  const [segmentValue, setSegmentValue] = useState<string>("cod");
+  const [total, setTotal] = useState<number>(0);
   const messageRef = useRef<HTMLIonInputElement>(null);
   const {
     cartItems,
@@ -48,14 +50,29 @@ function CartPage() {
     getStuff();
   }, []);
 
+  useEffect(() => {
+    if (cartItems) {
+      let price = 0;
+
+      cartItems.map((item) => {
+        price += item.price;
+      });
+
+      setTotal(price);
+    }
+  }, [cartItems]);
+
   async function handleDelete(id: number) {
     await deleteFromCart(id);
   }
 
   async function handleClick() {
     if (messageRef.current!.value === null) messageRef.current!.value = "";
-    await addOrder(messageRef.current!.value as string).then(() =>
-      setSuccess(true)
+    await addOrder(messageRef.current!.value as string, segmentValue).then(
+      () => {
+        setSuccess(true);
+        setTotal(0);
+      }
     );
   }
 
@@ -90,7 +107,11 @@ function CartPage() {
                 <IonButton onClick={handleClick}>
                   <IonText color="light">Place Order</IonText>
                 </IonButton>
-                <IonSegment scrollable value="cod">
+                <IonSegment
+                  scrollable
+                  value={segmentValue}
+                  onIonChange={(e) => setSegmentValue(e.detail.value!)}
+                >
                   <IonSegmentButton value="cod">
                     <IonIcon icon={cash} />
                     <IonLabel>Cash on Delivery</IonLabel>
@@ -130,6 +151,11 @@ function CartPage() {
                     </IonItem>
                   ))}
               </IonList>
+            </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol>
+              <IonText>Cart Total : Rs. {total}/-</IonText>
             </IonCol>
           </IonRow>
         </IonGrid>

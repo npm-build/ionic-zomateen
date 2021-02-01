@@ -23,6 +23,14 @@ import { useFood } from "../../../utils/FoodContext";
 import { useAuth } from "../../../utils/AuthContext";
 import { Redirect } from "react-router";
 
+function formateDate(isoString: string) {
+  return new Date(isoString).toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 const Home: React.FC = () => {
   const [segmentValue, setSegmentValue] = useState<string>("pending");
   const { loggedIn } = useAuth();
@@ -100,9 +108,12 @@ const Home: React.FC = () => {
                           </IonText>
                         </IonThumbnail>
                         <IonLabel>
-                          <h2 style={{ fontSize: "20px", fontWeight: 400 }}>
-                            Customer Name : {order.customerName}
+                          <h2 style={{ fontWeight: 400 }}>
+                            Name : {order.customerName}
                           </h2>
+                        </IonLabel>
+                        <IonLabel color="medium">
+                          <h4>{formateDate(order.dateOfOrder.toString())}</h4>
                         </IonLabel>
                       </IonItem>
                     ) : null;
