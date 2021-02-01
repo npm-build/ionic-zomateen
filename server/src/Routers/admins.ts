@@ -26,9 +26,24 @@ AdminRouter.get(
     }
 
     const token = req.headers.authorization!.split(" ")[1];
-    const admin: AdminType = req.user;
+    const user = req.user;
 
-    res.send({ user: admin, token });
+    return await AdminModel.findOne({ collegeId: user.collegeId })
+      .then((usr: any) => {
+        const currentUser = {
+          isAdmin: usr.isAdmin,
+          firstName: usr.firstName,
+          lastName: usr.lastName,
+          phone: usr.phone,
+          userName: usr.userName,
+          usn: usr.collegeId,
+        };
+
+        res.send({ user: currentUser, token });
+      })
+      .catch((e: Error) => {
+        res.send({ error: e, token });
+      });
   }
 );
 

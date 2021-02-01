@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 
-// const backendUrl = "http://localhost:8000/";
-const backendUrl = "https://zomateen-backend.herokuapp.com/";
+const backendUrl = "http://localhost:8000/";
+// const backendUrl = "https://zomateen-backend.herokuapp.com/";
 
 export const AuthContext = createContext<AuthContextType>({
   loggedIn: false,
@@ -33,11 +33,11 @@ export function checkToken(token: string) {
 
 export const AuthContextProvider: React.FC = ({ children }) => {
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [user, setUser] = useState<UserType | null>(null);
   const [redirectUrl, setRedirectUrl] = useState<string>(() => {
     return isAdmin === "true" ? "/admin/orders" : "/user/home";
   });
-  const [loading, setLoading] = useState<boolean>(false);
-  const [user, setUser] = useState<UserType | null>(null);
   const [cookies, setCookies] = useState<{
     accessToken: string;
     refreshToken: string;

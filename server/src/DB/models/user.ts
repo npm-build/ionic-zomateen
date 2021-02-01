@@ -21,8 +21,8 @@ export const userSchema: Schema = new Schema({
   password: { type: String, required: true },
   phone: { type: Number, required: true, unique: true },
   noOfCancels: { type: Number, default: 0 },
-  favorites: [{ type: Number, unique: true }],
-  cartItems: [{ type: Number, unique: true }],
+  favorites: [{ type: Number }],
+  cartItems: [{ type: Number }],
   isAdmin: { type: Boolean, default: false },
 });
 

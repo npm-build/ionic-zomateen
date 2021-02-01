@@ -39,6 +39,7 @@ UserRouter.get(
           userName: usr.userName,
           usn: usr.usn,
         };
+
         res.send({ user: currentUser, token });
       })
       .catch((e: Error) => {
