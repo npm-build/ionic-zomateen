@@ -78,7 +78,7 @@ const IndividualOrderPage: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
-        <IonLoading isOpen={loading} />
+        <IonLoading spinner="circles" isOpen={loading} />
         <IonToast
           isOpen={error}
           onDidDismiss={() => setError(false)}

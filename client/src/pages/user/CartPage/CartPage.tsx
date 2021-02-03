@@ -100,7 +100,7 @@ function CartPage() {
                 },
               ]}
             />
-            <IonLoading isOpen={loading} />
+            <IonLoading spinner="circles" isOpen={loading} />
             <IonCol>
               <div style={{ display: "flex", flexDirection: "column" }}>
                 <IonButton onClick={handleClick}>
@@ -132,7 +132,7 @@ function CartPage() {
           <IonRow>
             <IonCol>
               <IonList>
-                {cartItems &&
+                {cartItems && cartItems.length !== 0 ? (
                   cartItems.map((food) => (
                     <IonItem key={food.foodId}>
                       <IonLabel color="medium">{food.name}</IonLabel>
@@ -148,7 +148,13 @@ function CartPage() {
                         <IonIcon color="light" icon={trashBin} />
                       </IonButton>
                     </IonItem>
-                  ))}
+                  ))
+                ) : (
+                  <IonText>
+                    <h2>Cart Empty</h2>
+                    <h4>Place your order if you wanna buy a shopping cart</h4>
+                  </IonText>
+                )}
               </IonList>
             </IonCol>
           </IonRow>

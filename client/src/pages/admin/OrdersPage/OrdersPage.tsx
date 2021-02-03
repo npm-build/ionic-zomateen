@@ -60,7 +60,7 @@ const Home: React.FC = () => {
       <IonContent fullscreen>
         <IonGrid className="user-home-grid">
           <IonRow>
-            <IonLoading isOpen={loading} />
+            <IonLoading spinner="circles" isOpen={loading} />
             <IonCol className="margin-sides">
               <IonSegment
                 value={segmentValue}

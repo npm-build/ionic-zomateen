@@ -113,7 +113,7 @@ function LoginPage() {
               <IonButton fill="clear" expand="block" routerLink="/signup">
                 <IonText>Don't have an account?</IonText>
               </IonButton>
-              <IonLoading isOpen={loading}></IonLoading>
+              <IonLoading spinner="circles" isOpen={loading}></IonLoading>
             </IonCol>
           </IonRow>
         </IonGrid>

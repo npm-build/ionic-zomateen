@@ -63,8 +63,9 @@ function Favorites() {
           ]}
         />
         <IonList>
-          <IonLoading isOpen={loading} />
-          {favoriteFoodies ? (
+          {console.log(favoriteFoodies)}
+          <IonLoading spinner="circles" isOpen={loading} />
+          {favoriteFoodies && favoriteFoodies.length !== 0 ? (
             favoriteFoodies?.map((food) => (
               <IonItem
                 button
@@ -85,7 +86,10 @@ function Favorites() {
               </IonItem>
             ))
           ) : (
-            <IonText>Your favorites will appear here</IonText>
+            <IonText>
+              <h2>Nothing to see here</h2>
+              <h4>Your favorites will appear here</h4>
+            </IonText>
           )}
         </IonList>
       </IonContent>

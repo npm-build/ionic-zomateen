@@ -34,8 +34,8 @@ const FoodPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [food, setFood] = useState<FoodType | null>(null);
   const [checked, setChecked] = useState<boolean>(false);
-  const [success, setSuccess] = useState<boolean>(false);
-  const [error, setError] = useState<boolean>(false);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
   const reviewRef = useRef<HTMLIonInputElement>(null);
 
@@ -67,7 +67,7 @@ const FoodPage: React.FC = () => {
       const tempFood = foodies.find((food) => food.foodId === parseInt(id));
 
       if (tempFood) setFood(tempFood);
-      else setError(true);
+      else setError("Error adding item to cart!!!");
     }
   }, [currentUser, foodies, id]);
 
@@ -76,7 +76,7 @@ const FoodPage: React.FC = () => {
   }
 
   async function handleAddToCart() {
-    await addToCart(parseInt(id)).then(() => setSuccess(true));
+    await addToCart(parseInt(id)).then(() => setSuccess("Added to Cart!!!"));
   }
 
   async function handleAdd() {
@@ -84,7 +84,7 @@ const FoodPage: React.FC = () => {
 
     await addReview(parseInt(id), reviewRef.current.value as string).then(
       () => {
-        console.log("Review added");
+        setSuccess("Review added");
         getStuff();
       }
     );
@@ -114,32 +114,32 @@ const FoodPage: React.FC = () => {
       </IonHeader>
       <IonContent className="ion-padding">
         <IonToast
-          isOpen={error}
-          onDidDismiss={() => setError(false)}
-          message="Food item not found!!!"
+          isOpen={error ? true : false}
+          onDidDismiss={() => setError(null)}
+          message={error!}
           duration={4000}
           color="danger"
           buttons={[
             {
-              text: "Ok",
+              text: "X",
               handler: () => {
-                setError(false);
+                setError(null);
               },
             },
           ]}
         />
-        <IonLoading isOpen={loading} />
+        <IonLoading spinner="circles" isOpen={loading} />
         <IonToast
-          isOpen={success}
-          onDidDismiss={() => setSuccess(false)}
-          message="Food Item added to Cart!!!"
+          isOpen={success ? true : false}
+          onDidDismiss={() => setSuccess(null)}
+          message={success!}
           duration={3000}
           color="success"
           buttons={[
             {
               text: "Ok",
               handler: () => {
-                setSuccess(false);
+                setSuccess(null);
               },
             },
           ]}

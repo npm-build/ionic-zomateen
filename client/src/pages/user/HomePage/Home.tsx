@@ -11,6 +11,11 @@ import {
   IonSegmentButton,
   IonLabel,
   IonLoading,
+  IonSkeletonText,
+  IonCard,
+  IonCardHeader,
+  IonCardContent,
+  IonText,
 } from "@ionic/react";
 import React, { useEffect, useState } from "react";
 
@@ -67,7 +72,7 @@ const Home: React.FC = () => {
       <IonContent className="ion-margin-top" fullscreen>
         <IonGrid className="user-home-grid">
           <IonRow>
-            <IonLoading isOpen={loading} />
+            <IonLoading spinner="circles" isOpen={loading} />
             <IonCol className="margin-sides">
               <IonSegment
                 value={segmentValue}
@@ -86,12 +91,43 @@ const Home: React.FC = () => {
             </IonCol>
           </IonRow>
           <IonRow className="margin-bottom">
-            {foodies &&
+            {foodies ? (
               filteredFoodies?.map((food) => (
                 <IonCol className="justify-center" key={food.foodId}>
                   <FoodItem food={food} />
                 </IonCol>
-              ))}
+              ))
+            ) : (
+              <IonCol className="justify-center">
+                <IonCard className="fix-width-card">
+                  <IonCardHeader>
+                    <IonSkeletonText
+                      animated
+                      style={{ width: "150px", height: "150px" }}
+                    />
+                  </IonCardHeader>
+
+                  <IonCardContent>
+                    <IonText color="dark">
+                      <h2 style={{ fontWeight: 600 }}>
+                        <IonSkeletonText animated style={{ width: "50px" }} />
+                      </h2>
+                    </IonText>
+                    <div
+                      style={{ display: "flex" }}
+                      className="ion-justify-content-between"
+                    >
+                      <IonText color="medium">
+                        <IonSkeletonText animated style={{ width: "60px" }} />
+                      </IonText>
+                      <IonText>
+                        <IonSkeletonText animated style={{ width: "20px" }} />
+                      </IonText>
+                    </div>
+                  </IonCardContent>
+                </IonCard>
+              </IonCol>
+            )}
           </IonRow>
         </IonGrid>
       </IonContent>

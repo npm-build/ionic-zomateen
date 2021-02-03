@@ -59,8 +59,8 @@ function NotificationPage() {
           ]}
         />
         <IonList>
-          <IonLoading isOpen={loading} />
-          {userOrders &&
+          <IonLoading spinner="circles" isOpen={loading} />
+          {userOrders && userOrders.length !== 0 ? (
             userOrders?.map((order) => (
               <IonItem key={order.orderId}>
                 {order.isCompleted}
@@ -82,7 +82,13 @@ function NotificationPage() {
                   <h3>Message: {order.messages}</h3>
                 </IonLabel>
               </IonItem>
-            ))}
+            ))
+          ) : (
+            <IonText>
+              <h2>Your orders will appear here</h2>
+              <h4>Go Grab something!!!</h4>
+            </IonText>
+          )}
         </IonList>
       </IonContent>
     </IonPage>

@@ -146,9 +146,7 @@ function SettingsPage() {
             style={{ display: "flex", flexDirection: "column" }}
           >
             <div className="ion-padding">
-              <IonText color="tertiary">
-                <h2>Your Profile</h2>
-              </IonText>
+              <h2>Your Profile</h2>
             </div>
             <IonGrid className="ion-padding-vertical">
               <IonRow>
@@ -313,8 +311,8 @@ function SettingsPage() {
                         : `${backendUrl}${currentUser?.filePath}`
                     }
                   />
-                  <IonButton onClick={() => setShowModal(true)}>
-                    <IonIcon icon={pencil} />
+                  <IonButton fill="clear" onClick={() => setShowModal(true)}>
+                    <IonIcon color="tertiary" icon={pencil} />
                   </IonButton>
                 </IonCol>
               </IonRow>

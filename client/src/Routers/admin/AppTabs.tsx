@@ -25,7 +25,7 @@ function AppTabs() {
   const { loggedIn, loading } = useAuth();
 
   if (loading) {
-    return <IonLoading isOpen />;
+    return <IonLoading spinner="circles" isOpen />;
   }
 
   if (!loggedIn) {

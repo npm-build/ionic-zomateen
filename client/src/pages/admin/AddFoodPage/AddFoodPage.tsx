@@ -90,7 +90,7 @@ function AddFoodPage() {
           <IonTitle color="primary">Add Food</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonLoading isOpen={loading} />
+      <IonLoading spinner="circles" isOpen={loading} />
       <IonContent className="ion-padding">
         <Formik
           validateOnChange={true}

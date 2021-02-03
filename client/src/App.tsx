@@ -16,7 +16,7 @@ const App: React.FC = () => {
   const { loading } = useAuth();
 
   if (loading) {
-    return <IonLoading isOpen />;
+    return <IonLoading spinner="circles" isOpen />;
   }
 
   return (
