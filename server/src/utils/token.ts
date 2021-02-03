@@ -24,7 +24,7 @@ export function generateAccessTokenAdmin(doc: AdminType) {
     collegeId: doc!.collegeId,
     password: doc!.password,
   };
-  return jwt.sign(user, ACCESS_TOKEN_SECRET, { expiresIn: "40m" });
+  return jwt.sign(user, ACCESS_TOKEN_SECRET, { expiresIn: "1d" });
 }
 
 export function authenticateToken(req: any, res: Response, next: NextFunction) {
@@ -53,6 +53,7 @@ export function authenticateToken(req: any, res: Response, next: NextFunction) {
                 rt,
                 REFRESH_TOKEN_SECRET,
                 (err: any, currentUser: any) => {
+                  console.log(currentUser);
                   if (err) {
                     console.log(err);
                     req.error = "Unknown Error";

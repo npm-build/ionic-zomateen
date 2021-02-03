@@ -1,24 +1,47 @@
-import React from "react";
-import "./UserReview.style.css";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { backendUrl, useAuth } from "../../../utils/AuthContext";
+import "./UserReview.style.scss";
 
-function UserReview() {
+const UserReview: React.FC<{ data: ReviewType }> = ({ data }) => {
+  const [user, setUser] = useState<UserType | null>(null);
+
+  const { cookies } = useAuth();
+
+  async function getUserSafe() {
+    await axios
+      .get(`${backendUrl}api/user/getusersafe`, {
+        headers: {
+          Authorization: "Bearer " + cookies!.accessToken,
+          refreshToken: cookies!.refreshToken,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        setUser(res.data.user);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }
+
+  useEffect(() => {
+    getUserSafe();
+  }, []);
+
   return (
     <div className="user-review">
-      <img src="" alt="userPic" />
       {/* <img className='quotes' src={quotes} alt='quotes' /> */}
       <div className="user-review-text">
+        <img src={user?.filePath} alt="userPic" />
         <div className="text">
-          <h4>Shebin Joseph</h4>
+          <h4>{user?.userName}</h4>
           <p>4 Star</p>
-          <p>
-            The Best Briyani in Bangalore. I eat three briyani daily from our
-            canteen. My only motivation to go to college is now Dum Briyani in
-            our canteen
-          </p>
+          <p>{data.review}</p>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default UserReview;

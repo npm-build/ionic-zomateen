@@ -20,7 +20,7 @@ import { Redirect, Route } from "react-router-dom";
 import HomePage from "../../pages/user/HomePage/Home";
 import FoodPage from "../../pages/user/FoodPage/FoodPage";
 import FavoritesPage from "../../pages/user/Favorites/Favorites";
-import SettingsPage from "../../pages/SettingsPage";
+import SettingsPage from "../../pages/SettingsPage/SettingsPage";
 
 import { useAuth } from "../../utils/AuthContext";
 import CartPage from "../../pages/user/CartPage/CartPage";

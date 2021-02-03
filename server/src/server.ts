@@ -6,6 +6,7 @@ import { UserRouter } from "./Routers/users";
 import { FoodRouter } from "./Routers/food";
 import { AdminRouter } from "./Routers/admins";
 import { OrderRouter } from "./Routers/order";
+import { ReviewsRouter } from "./Routers/reviews";
 import "./DB/db";
 
 const app = express();
@@ -34,6 +35,7 @@ app.use(UserRouter);
 app.use(FoodRouter);
 app.use(AdminRouter);
 app.use(OrderRouter);
+app.use(ReviewsRouter);
 
 app.listen(process.env.PORT || 8000, () =>
   console.log("Server listening on PORT 8000")

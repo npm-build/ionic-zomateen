@@ -1,13 +1,11 @@
 import React, { createContext, useContext, useState } from "react";
 import axios from "axios";
 
-import { useAuth, checkToken } from "./AuthContext";
-
-const backendUrl = "http://localhost:8000/";
-// const backendUrl = "https://zomateen-backend.herokuapp.com/";
+import { useAuth, checkToken, backendUrl } from "./AuthContext";
 
 export const FoodContext = createContext<FoodContextType>({
   loading: false,
+  reviews: null,
   foodies: null,
   favoriteFoodies: null,
   cartItems: null,
@@ -24,6 +22,8 @@ export const FoodContext = createContext<FoodContextType>({
   deleteFromFavorites: async () => {},
   addToCart: async () => {},
   deleteFromCart: async () => {},
+  getReviews: async () => {},
+  addReview: async () => {},
 });
 
 export function useFood(): FoodContextType {
@@ -40,6 +40,7 @@ export const FoodContextProvider: React.FC = ({ children }) => {
     null
   );
   const [foodItems, setFoodItems] = useState<FoodType[] | null>(null);
+  const [reviews, setReviews] = useState<ReviewType[] | null>(null);
 
   async function getFood() {
     setLoading(true);
@@ -252,7 +253,8 @@ export const FoodContextProvider: React.FC = ({ children }) => {
           },
         }
       )
-      .then(() => {
+      .then((res) => {
+        checkToken(res.data.token);
         getCartItems();
         setLoading(false);
       })
@@ -272,6 +274,7 @@ export const FoodContextProvider: React.FC = ({ children }) => {
         },
       })
       .then((res) => {
+        checkToken(res.data.token);
         setCartItems(res.data.cartItems);
         setLoading(false);
       })
@@ -295,7 +298,8 @@ export const FoodContextProvider: React.FC = ({ children }) => {
           },
         }
       )
-      .then(() => {
+      .then((res) => {
+        checkToken(res.data.token);
         const tempCartItems = cartItems?.filter(
           (item) => item.foodId !== foodId
         );
@@ -308,8 +312,56 @@ export const FoodContextProvider: React.FC = ({ children }) => {
       });
   }
 
+  // Reviews
+
+  async function getReviews() {
+    setLoading(true);
+
+    await axios
+      .get(`${backendUrl}api/reviews`, {
+        headers: {
+          Authorization: "Bearer " + cookies?.accessToken,
+          refreshToken: cookies!.refreshToken,
+        },
+      })
+      .then((res) => {
+        checkToken(res.data.token);
+        setReviews(res.data.reviews);
+        setLoading(false);
+      })
+      .catch((e) => {
+        console.log(e);
+        setLoading(false);
+      });
+  }
+
+  async function addReview(foodId: number, review: string) {
+    setLoading(true);
+
+    await axios
+      .post(
+        `${backendUrl}api/reviews/add`,
+        { foodId, review },
+        {
+          headers: {
+            Authorization: "Bearer " + cookies?.accessToken,
+            refreshToken: cookies!.refreshToken,
+          },
+        }
+      )
+      .then((res) => {
+        checkToken(res.data.token);
+        setLoading(false);
+      })
+      .catch((e) => {
+        console.log(e);
+        setLoading(false);
+      });
+  }
+
   const foodies: FoodContextType = {
     loading,
+    reviews,
     foodies: foodItems,
     orders,
     userOrders,
@@ -326,6 +378,8 @@ export const FoodContextProvider: React.FC = ({ children }) => {
     addToCart,
     getCartItems,
     deleteFromCart,
+    getReviews,
+    addReview,
   };
 
   return (

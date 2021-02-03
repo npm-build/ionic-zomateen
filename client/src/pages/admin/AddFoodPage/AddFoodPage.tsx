@@ -18,17 +18,17 @@ import {
   IonToolbar,
   isPlatform,
 } from "@ionic/react";
-import { CameraResultType, CameraSource, Plugins } from "@capacitor/core";
 import * as yup from "yup";
 import axios from "axios";
-import React, { ChangeEvent, useRef, useState } from "react";
-import { Formik, Field, Form, FieldArray } from "formik";
 import { closeOutline } from "ionicons/icons";
+import { Formik, Field, Form, FieldArray } from "formik";
+import React, { ChangeEvent, useRef, useState } from "react";
+import { CameraResultType, CameraSource, Plugins } from "@capacitor/core";
 
 import "./AddFoodPage.style.scss";
 import img from "../../../assets/placeholder.png";
 import { useFood } from "../../../utils/FoodContext";
-import { useAuth } from "../../../utils/AuthContext";
+import { backendUrl, useAuth } from "../../../utils/AuthContext";
 
 function AddFoodPage() {
   const imgRef = useRef<HTMLInputElement>(null);
@@ -114,7 +114,7 @@ function AddFoodPage() {
             const accessToken = cookies!.accessToken;
 
             const formData = new FormData();
-            formData.append("filePath", file!);
+            formData.append("filePath", file);
             formData.append("name", data.name);
             formData.append("foodId", data.foodId);
             formData.append("isAvailable", data.isAvailable.toString());
@@ -123,7 +123,7 @@ function AddFoodPage() {
             formData.append("tags", JSON.stringify(data.tags));
 
             await axios
-              .post("http://localhost:8000/api/food/add", formData, {
+              .post(`${backendUrl}api/food/add`, formData, {
                 headers: {
                   "Content-Type": "multipart/form-data",
                   Authorization: "Bearer " + accessToken,

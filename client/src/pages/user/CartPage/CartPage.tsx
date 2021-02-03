@@ -26,8 +26,7 @@ import React, { useEffect, useRef, useState } from "react";
 import "./CartPage.style.scss";
 import { useFood } from "../../../utils/FoodContext";
 import { card, cash, trashBin } from "ionicons/icons";
-
-const backendUrl = "https://zomateen-backend.herokuapp.com/";
+import { backendUrl } from "../../../utils/AuthContext";
 
 function CartPage() {
   const [success, setSuccess] = useState<boolean>(false);

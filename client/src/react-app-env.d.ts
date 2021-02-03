@@ -7,9 +7,12 @@ interface UserType {
   usn: string;
   collegeId?: string;
   password: string;
-  phone: number;
+  phone: string;
   noOfCancels: number;
   favorites: number[];
+  filePath: string;
+  reviews: { foodId: number; review: string }[];
+  isAdmin: boolean;
 }
 
 interface FoodType {
@@ -34,6 +37,19 @@ interface OrderType {
   dateOfOrder: Date;
 }
 
+interface UserDetails {
+  firstName: string;
+  lastName: string;
+  userName: string;
+  phone: string;
+}
+
+interface ReviewType {
+  foodId: number;
+  review: string;
+  usn: string;
+}
+
 interface AuthContextType {
   loggedIn: boolean;
   redirectUrl: string;
@@ -44,6 +60,7 @@ interface AuthContextType {
     refreshToken: string;
   } | null;
   updateUser: () => Promise<void>;
+  updateUserDetails: (data: UserDetails) => Promise<void>;
   logOut: () => Promise<void>;
   login: (
     userName: string,
@@ -65,6 +82,7 @@ interface AuthContextType {
 
 interface FoodContextType {
   loading: boolean;
+  reviews: ReviewType[] | null;
   foodies: FoodType[] | null;
   cartItems: FoodType[] | null;
   orders: OrderType[] | null;
@@ -85,4 +103,6 @@ interface FoodContextType {
   deleteFromFavorites: (foodId: number) => Promise<void>;
   addToCart: (foodId: number) => Promise<void>;
   deleteFromCart: (foodId: number) => Promise<void>;
+  getReviews: () => Promise<void>;
+  addReview: (foodId: number, review: string) => Promise<void>;
 }

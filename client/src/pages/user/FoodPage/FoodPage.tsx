@@ -7,16 +7,20 @@ import {
   IonGrid,
   IonHeader,
   IonIcon,
+  IonInput,
+  IonItem,
   IonLabel,
+  IonList,
   IonLoading,
+  IonModal,
   IonPage,
   IonRow,
   IonText,
   IonToast,
   IonToolbar,
 } from "@ionic/react";
-import { add, heart, heartOutline } from "ionicons/icons";
-import React, { useEffect, useState } from "react";
+import { add, heart, heartOutline, create } from "ionicons/icons";
+import React, { useEffect, useRef, useState } from "react";
 import { Redirect, useParams } from "react-router-dom";
 
 import "./FoodPage.style.css";
@@ -32,6 +36,8 @@ const FoodPage: React.FC = () => {
   const [checked, setChecked] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const reviewRef = useRef<HTMLIonInputElement>(null);
 
   const { currentUser, loggedIn } = useAuth();
   const {
@@ -41,10 +47,14 @@ const FoodPage: React.FC = () => {
     getFavorites,
     addToCart,
     loading,
+    getReviews,
+    addReview,
+    reviews,
   } = useFood();
 
   async function getStuff() {
     await getFavorites();
+    await getReviews();
   }
 
   useEffect(() => {
@@ -67,6 +77,17 @@ const FoodPage: React.FC = () => {
 
   async function handleAddToCart() {
     await addToCart(parseInt(id)).then(() => setSuccess(true));
+  }
+
+  async function handleAdd() {
+    if (!reviewRef.current) return console.log("Cannot add empty review");
+
+    await addReview(parseInt(id), reviewRef.current.value as string).then(
+      () => {
+        console.log("Review added");
+        getStuff();
+      }
+    );
   }
 
   async function doStuff() {
@@ -146,19 +167,57 @@ const FoodPage: React.FC = () => {
                   <IonIcon slot="start" color="light" icon={add} />
                   <IonText color="light">Add To Cart</IonText>
                 </IonButton>
+                <IonButton color="dark" onClick={() => setShowModal(true)}>
+                  <IonIcon slot="start" icon={create} />
+                  <IonText>Add Review</IonText>
+                </IonButton>
               </div>
             </IonCol>
+
+            <IonModal
+              cssClass="avatar-modal"
+              isOpen={showModal}
+              onDidDismiss={() => setShowModal(false)}
+            >
+              <IonList>
+                <IonItem>
+                  <IonText color="tertiary">
+                    <h1>Add your Review</h1>
+                  </IonText>
+                </IonItem>
+                <IonItem>
+                  <IonLabel position="floating">Review</IonLabel>
+                  <IonInput ref={reviewRef} type="text" />
+                </IonItem>
+                <IonItem>
+                  <IonButton
+                    onClick={async () => {
+                      await handleAdd().then(() => setShowModal(false));
+                    }}
+                  >
+                    <IonText color="light">Add</IonText>
+                  </IonButton>
+                  <IonButton onClick={() => setShowModal(false)}>
+                    <IonText color="light">Close Modal</IonText>
+                  </IonButton>
+                </IonItem>
+              </IonList>
+            </IonModal>
           </IonRow>
           <IonRow>
             <IonCol>
               <IonText color="dark">
-                <h2>Reviews</h2>
+                <h2 style={{ fontWeight: 600 }}>Reviews</h2>
               </IonText>
-              <UserReview />
+              {reviews?.map((item, index) => {
+                return item.foodId == parseInt(id) ? (
+                  <UserReview key={index} data={item} />
+                ) : null;
+              })}
             </IonCol>
           </IonRow>
           {/* <IonRow>
-            ToDO
+            ToDO: Add similar items!!!
           </IonRow> */}
         </IonGrid>
       </IonContent>

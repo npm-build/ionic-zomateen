@@ -6,8 +6,9 @@ export interface UserType extends Document {
   userName: string;
   usn: string;
   password: string;
-  phone: number;
+  phone: string;
   noOfCancels: number;
+  filePath: string;
   favorites: number[];
   cartItems: number[];
   isAdmin: boolean;
@@ -19,7 +20,14 @@ export const userSchema: Schema = new Schema({
   userName: { type: String, required: true },
   usn: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  phone: { type: Number, required: true, unique: true },
+  phone: { type: String, required: true, unique: true },
+  filePath: {
+    type: String,
+    required: true,
+    unique: true,
+    default:
+      "https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y",
+  },
   noOfCancels: { type: Number, default: 0 },
   favorites: [{ type: Number }],
   cartItems: [{ type: Number }],

@@ -9,6 +9,7 @@ import {
   refreshTokenModel,
   RefreshTokenType,
 } from "../DB/models/refreshTokens";
+import { UploadedFile } from "express-fileupload";
 
 export const UserRouter = express.Router();
 const REFRESH_TOKEN_SECRET =
@@ -27,7 +28,7 @@ UserRouter.get(
 
     await userModel
       .findOne({ usn: user.usn })
-      .then((usr: any) => {
+      .then((usr: UserType) => {
         const currentUser = {
           noOfCancels: usr.noOfCancels,
           favorites: usr.favorites,
@@ -38,6 +39,8 @@ UserRouter.get(
           phone: usr.phone,
           userName: usr.userName,
           usn: usr.usn,
+          filePath: usr.filePath,
+          reviews: user.reviews,
         };
 
         res.send({ user: currentUser, token });
@@ -48,76 +51,30 @@ UserRouter.get(
   }
 );
 
-UserRouter.post("/api/user/login", async (req: Request, res: Response) => {
-  const userName = req.body.userName;
-  const userPass = req.body.password;
-
-  await userModel
-    .findOne({ userName })
-    .then((currentUser: UserType | null) => {
-      if (currentUser === null)
-        return res.status(404).send({ error: "User not found!!!" });
-
-      bcrypt.compare(
-        userPass,
-        currentUser.password,
-        async (_: Error, result: boolean) => {
-          if (result) {
-            const user = {
-              userName: currentUser.userName,
-              usn: currentUser.usn,
-              password: currentUser.password,
-            };
-            const access_token = generateAccessTokenUser(currentUser);
-            const refresh_token = await refreshTokenModel
-              .findOne({ usn: user.usn })
-              .then(async (token: RefreshTokenType | undefined) => {
-                const rt = jwt.sign(user, REFRESH_TOKEN_SECRET);
-
-                if (token) return token;
-                else {
-                  const refreshToken = new refreshTokenModel({
-                    token: rt,
-                    usn: user.usn,
-                  });
-
-                  await refreshToken.save();
-                  return rt;
-                }
-              });
-
-            return res.send({
-              accessToken: access_token,
-              refreshToken: refresh_token.token,
-            });
-          } else
-            return res.status(400).send({
-              error: "Error logging in!!!",
-              message: "Passwords do not match!!!",
-            });
-        }
-      );
-    })
-    .catch((err: Error) =>
-      res.status(400).send({ error: "Error logging in!!!", msg: err })
-    );
-});
-
-UserRouter.delete(
-  "/api/user/logout",
+UserRouter.get(
+  "/api/user/getusersafe",
   authenticateToken,
   async (req: any, res: Response) => {
     if (req.error) {
       return res.send({ error: req.error });
     }
 
-    const user = req.user;
     const token = req.headers.authorization!.split(" ")[1];
+    const user = req.user;
 
-    await refreshTokenModel
-      .findOneAndDelete({ usn: user.usn })
-      .then(() => res.send({ error: "Logged out", token }))
-      .catch((e: Error) => res.send({ error: e, token }));
+    await userModel
+      .findOne({ usn: user.usn })
+      .then((usr: UserType) => {
+        const currentUser = {
+          userName: usr.userName,
+          filePath: usr.filePath,
+        };
+
+        res.send({ user: currentUser, token });
+      })
+      .catch((e: Error) => {
+        res.send({ error: e, token });
+      });
   }
 );
 
@@ -161,6 +118,154 @@ UserRouter.post("/api/user/signup", async (req: Request, res: Response) => {
     res.send({ error: e });
   }
 });
+
+UserRouter.post("/api/user/login", async (req: Request, res: Response) => {
+  const userName = req.body.userName;
+  const userPass = req.body.password;
+
+  await userModel
+    .findOne({ userName })
+    .then((currentUser: UserType | null) => {
+      if (currentUser === null)
+        return res.status(404).send({ error: "User not found!!!" });
+
+      bcrypt.compare(
+        userPass,
+        currentUser.password,
+        async (_: Error, result: boolean) => {
+          if (result) {
+            const user = {
+              userName: currentUser.userName,
+              usn: currentUser.usn,
+              password: currentUser.password,
+            };
+
+            const access_token = generateAccessTokenUser(currentUser);
+            await refreshTokenModel
+              .findOne({ usn: user.usn })
+              .then(async (token: RefreshTokenType | undefined) => {
+                if (token) {
+                  return res.send({
+                    accessToken: access_token,
+                    refreshToken: token.token,
+                  });
+                } else {
+                  const rt = jwt.sign(user, REFRESH_TOKEN_SECRET);
+                  const refreshToken = new refreshTokenModel({
+                    token: rt,
+                    usn: user.usn,
+                  });
+
+                  await refreshToken.save();
+                  return res.send({
+                    accessToken: access_token,
+                    refreshToken: rt,
+                  });
+                }
+              });
+          } else
+            return res.status(400).send({
+              error: "Error logging in!!!",
+              message: "Passwords do not match!!!",
+            });
+        }
+      );
+    })
+    .catch((err: Error) =>
+      res.status(400).send({ error: "Error logging in!!!", msg: err })
+    );
+});
+
+UserRouter.delete(
+  "/api/user/logout",
+  authenticateToken,
+  async (req: any, res: Response) => {
+    if (req.error) {
+      return res.send({ error: req.error });
+    }
+
+    const user = req.user;
+    const token = req.headers.authorization!.split(" ")[1];
+
+    await refreshTokenModel
+      .findOneAndDelete({ usn: user.usn })
+      .then(() => res.send({ error: "Logged out", token }))
+      .catch((e: Error) => res.send({ error: e, token }));
+  }
+);
+
+UserRouter.patch(
+  "/api/user/update",
+  authenticateToken,
+  async (req: any, res: Response) => {
+    if (req.error) {
+      return res.send({ error: req.error });
+    }
+    const token = req.headers.authorization!.split(" ")[1];
+    const { firstName, lastName, phone, userName } = req.body;
+    const user = req.user;
+
+    try {
+      return await userModel
+        .updateOne({ usn: user.usn }, { firstName, lastName, phone, userName })
+        .then((idk: any) => {
+          console.log(idk);
+          res.send({ message: "User updated successfully", token });
+        })
+        .catch((e: any) => {
+          console.log(e);
+          res.send({ error: e });
+        });
+    } catch (e: any) {
+      console.log(e);
+      return res.send({ error: e });
+    }
+  }
+);
+
+UserRouter.patch(
+  "/api/user/updateavatar",
+  authenticateToken,
+  async (req: any, res: Response) => {
+    if (req.error) {
+      return res.send({ error: req.error });
+    }
+
+    const token = req.headers.authorization!.split(" ")[1];
+    const user = req.user;
+
+    if (!req.files) {
+      return res.status(400).json({ msg: "No file uploaded" });
+    }
+
+    const file: UploadedFile = req.files["file"] as UploadedFile;
+
+    file.mv("./uploads" + file.name, (err) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send({ err, token });
+      }
+    });
+
+    const filePath = `uploads/${file.name}`;
+
+    try {
+      return await userModel
+        .updateOne({ usn: user.usn }, { filePath })
+        .then((idk: any) => {
+          console.log(idk);
+          res.send({ message: "User updated successfully", token });
+        })
+        .catch((e: any) => {
+          console.log(e);
+          res.send({ error: e });
+        });
+    } catch (e: any) {
+      console.log(e);
+      return res.send({ error: e });
+    }
+  }
+);
 
 UserRouter.patch(
   "/api/user/forgotpassword",

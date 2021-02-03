@@ -18,7 +18,7 @@ import { Redirect, Route } from "react-router-dom";
 import OrdersPage from "../../pages/admin/OrdersPage/OrdersPage";
 import AddFoodPage from "../../pages/admin/AddFoodPage/AddFoodPage";
 import IndividualOrderPage from "../../pages/admin/IndividualOrderPage/IndividualOrderPage";
-import SettingsPage from "../../pages/SettingsPage";
+import SettingsPage from "../../pages/SettingsPage/SettingsPage";
 import { useAuth } from "../../utils/AuthContext";
 
 function AppTabs() {

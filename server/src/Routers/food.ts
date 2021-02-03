@@ -87,7 +87,6 @@ FoodRouter.post(
     await foodItem
       .save()
       .then(() => {
-        console.log("Food Item Added successfully");
         return res.send({ message: "Food Item Added successfully", token });
       })
       .catch((e: Error) => {

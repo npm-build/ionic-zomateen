@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 
-const backendUrl = "http://localhost:8000/";
-// const backendUrl = "https://zomateen-backend.herokuapp.com/";
+export const backendUrl = "http://localhost:8000/";
+// export const backendUrl = "https://zomateen-backend.herokuapp.com/";
 
 export const AuthContext = createContext<AuthContextType>({
   loggedIn: false,
@@ -13,6 +13,7 @@ export const AuthContext = createContext<AuthContextType>({
   login: async () => {},
   logOut: async () => {},
   signUp: async () => {},
+  updateUserDetails: async () => {},
   updateUser: async () => {},
 });
 
@@ -91,6 +92,31 @@ export const AuthContextProvider: React.FC = ({ children }) => {
         setLoading(false);
         setUser(res.data.user);
         checkToken(res.data.token);
+      })
+      .catch((e) => {
+        setLoading(false);
+        console.log(e);
+      });
+  }
+
+  async function updateUserDetails(data: UserDetails) {
+    setLoading(true);
+
+    if (!data) {
+      return console.log("Data not present");
+    }
+
+    await axios
+      .patch(`${backendUrl}api/user/update`, data, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + cookies!.accessToken,
+          refreshToken: cookies!.refreshToken,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        setLoading(false);
       })
       .catch((e) => {
         setLoading(false);
@@ -212,6 +238,7 @@ export const AuthContextProvider: React.FC = ({ children }) => {
     login,
     signUp,
     cookies,
+    updateUserDetails,
     updateUser,
   };
 
