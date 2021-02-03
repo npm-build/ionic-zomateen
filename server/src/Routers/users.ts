@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import fs from "fs";
 import { authenticateToken } from "../utils/token";
 import { userModel, UserType } from "../DB/models/user";
 import { generateAccessTokenUser } from "../utils/token";
@@ -233,6 +234,22 @@ UserRouter.patch(
 
     const token = req.headers.authorization!.split(" ")[1];
     const user = req.user;
+
+    await userModel
+      .findOne({ usn: user.usn })
+      .then((prevFilePath: string) => {
+        if (!prevFilePath.startsWith("https")) {
+          try {
+            fs.unlinkSync(prevFilePath);
+          } catch (err) {
+            console.error(err);
+          }
+        }
+      })
+      .catch((e: any) => {
+        console.log(e);
+        res.send({ error: e });
+      });
 
     if (!req.files) {
       return res.status(400).json({ msg: "No file uploaded" });
