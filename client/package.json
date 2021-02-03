@@ -9,7 +9,7 @@
     "build": "npx ionic build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "android": "yarn build && npx cap sync android && npx open android"
+    "android": "yarn build && npx cap sync android && npx cap open android"
   },
   "dependencies": {
     "@capacitor/android": "2.4.6",
