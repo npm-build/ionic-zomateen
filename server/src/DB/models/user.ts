@@ -25,8 +25,7 @@ export const userSchema: Schema = new Schema({
     type: String,
     required: true,
     unique: true,
-    default:
-      "https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y",
+    default: "uploads/placeholder.png",
   },
   noOfCancels: { type: Number, default: 0 },
   favorites: [{ type: Number }],

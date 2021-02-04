@@ -37,12 +37,15 @@ function SettingsPage() {
     cookies,
     currentUser,
     updateUserDetails,
+    updateUser,
   } = useAuth();
   const [toggleUpdate, setToggleUpdate] = useState<boolean>(false);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [imgUrl, setImgUrl] = useState<string>(currentUser!.filePath);
+  const [imgUrl, setImgUrl] = useState<string>(
+    `${backendUrl}${currentUser!.filePath}`
+  );
   const [file, setFile] = useState<Blob>();
 
   const imgRef = useRef<HTMLInputElement>(null);
@@ -90,6 +93,7 @@ function SettingsPage() {
 
   async function handleClick() {
     let theFile = file;
+
     if (!file) {
       await axios.get(`${backendUrl}${currentUser?.filePath}`).then((res) => {
         setFile(res.data);
@@ -124,8 +128,9 @@ function SettingsPage() {
           refreshToken: cookies!.refreshToken,
         },
       })
-      .then((res) => {
-        console.log(res);
+      .then(async () => {
+        setShowModal(false);
+        await updateUser();
       })
       .catch((e) => {
         console.log(e);
@@ -241,7 +246,7 @@ function SettingsPage() {
                           marginTop: "10px",
                           width: "200px",
                         }}
-                        src={`${backendUrl}${imgUrl}`}
+                        src={imgUrl}
                         alt="img"
                       />
                       <input
@@ -256,7 +261,7 @@ function SettingsPage() {
                     <IonItem>
                       <IonButton
                         onClick={async () => {
-                          await updatePic().then(() => setShowModal(false));
+                          await updatePic();
                           setSuccess("Avatar uploaded successfully");
                         }}
                       >
@@ -305,11 +310,7 @@ function SettingsPage() {
                       objectFit: "contain",
                       borderRadius: "100%",
                     }}
-                    src={
-                      currentUser?.filePath.startsWith("https")
-                        ? `${currentUser?.filePath}`
-                        : `${backendUrl}${currentUser?.filePath}`
-                    }
+                    src={`${backendUrl}${currentUser?.filePath}`}
                   />
                   <IonButton fill="clear" onClick={() => setShowModal(true)}>
                     <IonIcon color="tertiary" icon={pencil} />

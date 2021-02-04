@@ -237,12 +237,14 @@ UserRouter.patch(
 
     await userModel
       .findOne({ usn: user.usn })
-      .then((prevFilePath: string) => {
-        if (!prevFilePath.startsWith("https")) {
-          try {
-            fs.unlinkSync(prevFilePath);
-          } catch (err) {
-            console.error(err);
+      .then((doc: any) => {
+        if (doc.filePath) {
+          if (doc.filePath !== "uploads/placeholder.png") {
+            try {
+              fs.unlinkSync(doc.filePath);
+            } catch (err) {
+              console.error(err);
+            }
           }
         }
       })
@@ -257,7 +259,7 @@ UserRouter.patch(
 
     const file: UploadedFile = req.files["file"] as UploadedFile;
 
-    file.mv("./uploads" + file.name, (err) => {
+    file.mv("./uploads/" + file.name, (err) => {
       if (err) {
         console.error(err);
         return res.status(500).send({ err, token });
@@ -269,8 +271,7 @@ UserRouter.patch(
     try {
       return await userModel
         .updateOne({ usn: user.usn }, { filePath })
-        .then((idk: any) => {
-          console.log(idk);
+        .then(() => {
           res.send({ message: "User updated successfully", token });
         })
         .catch((e: any) => {
