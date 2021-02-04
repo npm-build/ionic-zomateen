@@ -29,22 +29,24 @@ UserRouter.get(
 
     await userModel
       .findOne({ usn: user.usn })
-      .then((usr: UserType) => {
-        const currentUser = {
-          noOfCancels: usr.noOfCancels,
-          favorites: usr.favorites,
-          cartItems: usr.cartItems,
-          isAdmin: usr.isAdmin,
-          firstName: usr.firstName,
-          lastName: usr.lastName,
-          phone: usr.phone,
-          userName: usr.userName,
-          usn: usr.usn,
-          filePath: usr.filePath,
-          reviews: user.reviews,
-        };
+      .then((usr: UserType | null) => {
+        if (usr) {
+          const currentUser = {
+            noOfCancels: usr.noOfCancels,
+            favorites: usr.favorites,
+            cartItems: usr.cartItems,
+            isAdmin: usr.isAdmin,
+            firstName: usr.firstName,
+            lastName: usr.lastName,
+            phone: usr.phone,
+            userName: usr.userName,
+            usn: usr.usn,
+            filePath: usr.filePath,
+            reviews: user.reviews,
+          };
 
-        res.send({ user: currentUser, token });
+          res.send({ user: currentUser, token });
+        }
       })
       .catch((e: Error) => {
         res.send({ error: e, token });
@@ -65,13 +67,15 @@ UserRouter.get(
 
     await userModel
       .findOne({ usn: user.usn })
-      .then((usr: UserType) => {
-        const currentUser = {
-          userName: usr.userName,
-          filePath: usr.filePath,
-        };
+      .then((usr: UserType | null) => {
+        if (usr) {
+          const currentUser = {
+            userName: usr.userName,
+            filePath: usr.filePath,
+          };
 
-        res.send({ user: currentUser, token });
+          res.send({ user: currentUser, token });
+        }
       })
       .catch((e: Error) => {
         res.send({ error: e, token });
@@ -144,7 +148,7 @@ UserRouter.post("/api/user/login", async (req: Request, res: Response) => {
             const access_token = generateAccessTokenUser(currentUser);
             await refreshTokenModel
               .findOne({ usn: user.usn })
-              .then(async (token: RefreshTokenType | undefined) => {
+              .then(async (token: RefreshTokenType | null) => {
                 if (token) {
                   return res.send({
                     accessToken: access_token,
